@@ -1,0 +1,15 @@
+body {
+    background-size: cover;
+    margin: 0;
+}
+
+.boxed-shadow {
+    box-shadow: 3px 3px 3px rgba(34, 34, 34, 0.12);
+}
+
+#custom-nav {
+    -webkit-box-shadow: 0px 4px 7px -1px rgba(0,0,0,0.26);
+    -moz-box-shadow: 0px 4px 7px -1px rgba(0,0,0,0.26);
+    box-shadow: 0px 4px 7px -1px rgba(0,0,0,0.26);
+}
+
