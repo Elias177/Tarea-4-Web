@@ -1,6 +1,14 @@
 package clases;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Usuario {
+
+    public Usuario() {
+    }
 
     public Long getId() {
         return id;
@@ -10,6 +18,8 @@ public class Usuario {
         this.id = id;
     }
 
+    @Id
+    @GeneratedValue
     private Long id;
     private String username;
     private String nombre;

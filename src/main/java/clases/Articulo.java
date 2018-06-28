@@ -1,9 +1,15 @@
 package clases;
 
+import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "ARTICULO")
 public class Articulo {
+
+    public Articulo() {
+    }
 
     public Long getId() {
         return id;
@@ -13,20 +19,23 @@ public class Articulo {
         this.id = id;
     }
 
+    @Id
+    @GeneratedValue
     private Long id;
     private String titulo;
+    @Column(name = "cuerpo",columnDefinition = "text")
     private String cuerpo;
-    private Long id_autor;
+
+    @OneToOne
+    private Usuario autor;
+
     private Date fecha;
+    @OneToMany(mappedBy = "articulo",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comentario> listaComentarios;
 
-    public Long getId_autor() {
-        return id_autor;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Etiqueta> listaEtiqueta;
 
-    public void setId_autor(Long id_autor) {
-        this.id_autor = id_autor;
-    }
 
     public boolean isActivo() {
         return activo;
@@ -39,10 +48,10 @@ public class Articulo {
     private boolean activo;
 
 
-    public Articulo(String titulo, String cuerpo, Long autor, Date fecha, List<Comentario> listaComentarios, List<Etiqueta> listaEtiqueta) {
+    public Articulo(String titulo, String cuerpo, Usuario autor, Date fecha, List<Comentario> listaComentarios, List<Etiqueta> listaEtiqueta) {
         this.titulo = titulo;
         this.cuerpo = cuerpo;
-        this.id_autor = autor;
+        this.autor = autor;
         this.fecha = fecha;
         this.listaComentarios = listaComentarios;
         this.listaEtiqueta = listaEtiqueta;
@@ -65,8 +74,6 @@ public class Articulo {
         this.listaEtiqueta = listaEtiqueta;
     }
 
-    private List<Etiqueta> listaEtiqueta;
-
     public String getTitulo() {
         return titulo;
     }
@@ -83,12 +90,12 @@ public class Articulo {
         this.cuerpo = cuerpo;
     }
 
-    public Long getAutor() {
-        return id_autor;
+    public Usuario getAutor() {
+        return autor;
     }
 
-    public void setAutor(Long autor) {
-        this.id_autor = autor;
+    public void setAutor(Usuario autor) {
+        this.autor = autor;
     }
 
     public Date getFecha() {

@@ -38,8 +38,8 @@ public class UsuarioDao {
         Conexion con = new Conexion();
         conexion = con.getConexion();
         conexion.open();
-        int count = conexion.createQuery(sql).executeScalar(Integer.class);
-        return count;
+//        int count = conexion.createQuery(sql).executeScalar(Integer.class);
+        return 0;
     }
 
     public void crearDB(){

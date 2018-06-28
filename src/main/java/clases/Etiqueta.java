@@ -1,6 +1,14 @@
 package clases;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Etiqueta {
+
+    public Etiqueta() {
+    }
 
     public Long getId_etiqueta() {
         return id_etiqueta;
@@ -10,6 +18,8 @@ public class Etiqueta {
         this.id_etiqueta = id_etiqueta;
     }
 
+    @Id
+    @GeneratedValue
     private Long id_etiqueta;
     private String etiqueta;
 
