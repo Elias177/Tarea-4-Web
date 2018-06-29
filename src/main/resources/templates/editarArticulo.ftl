@@ -18,7 +18,14 @@
                                 <label for="cuerpo"><strong>Cuerpo</strong></label><br>
                                 <textarea name="cuerpo" class="form-control rounded-0">${articulo.cuerpo}</textarea>
 
-                                </textarea>
+                                <label for ="etiquetas"><strong>Etiquetas</strong></label><br>
+                                <#if articulo.listaEtiqueta?size gt 0>
+                                 <textarea name="etiquetas" class="form-control rounded-0">
+                                    <#list articulo.listaEtiqueta as etiqueta>
+${etiqueta.etiqueta},
+                                    </#list>
+                                 </textarea>
+                            </#if>
                             </div>
                             <button class="btn btn-light" type="submit">
                                 EDITAR

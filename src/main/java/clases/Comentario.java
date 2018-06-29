@@ -8,6 +8,8 @@ public class Comentario {
     @Id
     @GeneratedValue
     private long id_comentario;
+
+    @Column(name = "comentario", columnDefinition = "TEXT")
     private String comentario;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -16,9 +18,10 @@ public class Comentario {
     @ManyToOne(fetch = FetchType.EAGER)
     private Articulo articulo;
 
-    public Comentario(String comentario, Usuario autor) {
+    public Comentario(String comentario, Usuario autor, Articulo articulo) {
         this.comentario = comentario;
         this.autor = autor;
+        this.articulo = articulo;
     }
 
     public Comentario() {

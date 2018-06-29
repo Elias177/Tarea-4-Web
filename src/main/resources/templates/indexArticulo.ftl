@@ -13,7 +13,7 @@
                             ${articulo.titulo}
                         </h1>
                         </br>
-                        <#if admin || autor>
+                        <#if usuario.administrator || usuario.autor>
                             <a href="editar/${articulo.id}" class="text-success ml-2">
                                 <button type="button" class="btn btn-warning">Editar</button>
                             </a>
@@ -39,18 +39,51 @@
 
                         </h6>
                         <#if articulo.listaEtiqueta?size gt 0>
-                          <span class="label label-default">
+                          <span class="label label-default" style="color:lawngreen">
                                 <#list articulo.listaEtiqueta as etiqueta>
                                     ${etiqueta.etiqueta}
                                 </#list>
                           </span>
                         </#if>
+
+                        <div>
+                            <span class="label label-default" style="color:cornflowerblue";>
+                                Likes: ${likes}
+                            </span>
+
+                        </div>
+
+                        <div>
+                            <div>
+                                <span class="label label-default" style="color:crimson">
+                                Dislikes: ${dislikes}
+                        </span>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
                     </div>
+                    <#if usuario.password != "no" && usuario.username != "no">
+                        <div>
+                            <form action="/articulo/${articulo.id}/like">
+                                <button style="display: inline;" class="btn btn-primary"type="submit" >
+                                    Like
+                                </button>
+                            </form>
+                            <form action="/articulo/${articulo.id}/dislike">
+                                <button style="display: inline;" class="btn btn-primary"type="submit">
+                                    Dislike
+                                </button>
+                        </div>
+                            </form>
 
+                    </#if>
+
+                     <#if usuario.password != "no" && usuario.username != "no">
                     <div class="card-body">
                         <form class="col-11 py-5" method="post" action="/articulo/${articulo.id}/comentar">
                             <div class="panel px-2 py-3 bg-white">
@@ -58,12 +91,16 @@
                             </div>
 
                             <div class="text-center">
-                                <button class="btn btn-primary"type="submit">
-                                    Comentar
-                                </button>
+
+                                    <button class="btn btn-primary"type="submit">
+                                        Comentar
+                                    </button>
+
+
                             </div>
                         </form>
                     </div>
+                     </#if>
                 </div>
 
                 <div class="card">
@@ -76,7 +113,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title m-0">
                                         <strong>
-                                            <i class="fas fa-user"></i> ${username}
+                                            <i class="fas fa-user"></i> ${comentario.autor.username}
                                         </strong>
                                     </h5>
                                 </div>
@@ -93,3 +130,4 @@
         </div>
     </div>
 </div>
+
