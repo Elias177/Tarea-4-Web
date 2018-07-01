@@ -96,7 +96,7 @@
 
                             <#if articulo.listaEtiqueta?size gt 0>
                                     <#list articulo.listaEtiqueta as etiqueta>
-                                        <a href="homeTags/${etiqueta.etiqueta}" class="label label-default"">${etiqueta.etiqueta}</a>
+                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-default"">${etiqueta.etiqueta}</a>
                                     </#list>
                             </#if>
                     </strong>

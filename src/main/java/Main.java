@@ -108,6 +108,9 @@ public class Main {
                 articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
             }
 
+
+            int pagina = Integer.parseInt(req.queryParams("pagina"));
+
             ArrayList<Articulo> filtrados = new ArrayList<>();
 
             for(int j = 0; j < articuloList.size(); j++){
@@ -117,6 +120,25 @@ public class Main {
                     }
                 }
             }
+
+            int maxPagina = (int) Math.ceil(filtrados.size() / 5);
+            atr.put("pagina", pagina);
+
+            if(pagina >= maxPagina){
+                atr.put("valorSiguiente", 0);
+            }else{
+                atr.put("valorSiguiente", 1);
+            }
+
+            if(pagina <= 1){
+                atr.put("valorAnterior", 0);
+                System.out.println(pagina);
+            }else{
+                atr.put("valorAnterior", 1);
+            }
+
+            atr.put("anterior", (pagina - 1));
+            atr.put("siguiente", (pagina + 1));
             atr.put("admin",usuarioLogeado.isAdministrator());
             atr.put("autor",usuarioLogeado.isAutor());
             atr.put("LosArticulos",filtrados);

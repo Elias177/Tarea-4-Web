@@ -116,11 +116,15 @@
 <footer>
     <div class="container">
         <ul class="pagination">
-            <li class="active"><a href="">1</a></li>
-            <li><a href="">2</a></li>
-            <li><a href="">3</a></li>
-            <li><a href="">4</a></li>
-            <li><a href="">5</a></li>
+            <#if valorAnterior == 1>
+					<li><a class="active" href="/homeTags/${etiquetaFiltro}?pagina=${anterior}">&lt;&lt; Anterior</a></li>
+
+            </#if>
+
+            <#if valorSiguiente == 1>
+                <li><a class="active" href="/homeTags/${etiquetaFiltro}?pagina=${siguiente}">Siguiente &gt;&gt;</a></li>
+            </#if>
+
         </ul>
     </div>
 
