@@ -1,26 +1,22 @@
 package ORM;
 
 import clases.Usuario;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import java.util.Iterator;
 
 public class UsuarioORM {
 
-    public EntityManagerFactory emf = Persistence.createEntityManagerFactory("pUnit");
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("pUnit");
     EntityManager em = emf.createEntityManager();
 
     public void guardarUsuario(Usuario usuario){
         em.getTransaction().begin();
+        usuario.setActivo(true);
         em.persist(usuario);
         em.getTransaction().commit();
-        em.close();
 
     }
 
@@ -34,15 +30,23 @@ public class UsuarioORM {
         Usuario u = em.find(Usuario.class,editar.getId());
         u = editar;
         em.getTransaction().commit();
-        em.close();
+        
+    }
+
+    public void dropUsuario(Long id){
+        em.getTransaction().begin();
+        Usuario u = em.find(Usuario.class,id);
+        em.remove(u);
+        em.getTransaction().commit();
+        
     }
 
     public void borrarUsuario(Long id){
         em.getTransaction().begin();
         Usuario u = em.find(Usuario.class,id);
-        em.remove(u);
+        u.setActivo(false);
         em.getTransaction().commit();
-        em.close();
+        
     }
 
     public Usuario getSesion(String session){
@@ -54,11 +58,18 @@ public class UsuarioORM {
     }
 
     public Usuario getUsuario(String nombre,String pass){
-        Usuario u = (Usuario) em.createNativeQuery(
-                "select * from Usuario  where USERNAME = ?1 and PASSWORD = ?2")
-                .setParameter(1, nombre)
-                .setParameter(2,pass)
-                .getSingleResult();
-        return u;
+
+        Query query = em.createQuery("select u from Usuario u where u.username = :user AND u.password = :pass")
+            .setParameter("user", nombre)
+            .setParameter("pass", pass);
+        return (Usuario)query.getSingleResult();
+    }
+
+    public void saveCookies(Long id,String sesion){
+        em.getTransaction().begin();
+        Usuario u = em.find(Usuario.class,id);
+        u.setCookies(sesion);
+        em.getTransaction().commit();
+        
     }
 }

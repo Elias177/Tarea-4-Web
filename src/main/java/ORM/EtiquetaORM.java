@@ -1,15 +1,12 @@
 package ORM;
 
 import clases.Etiqueta;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import java.util.Iterator;
+import java.util.List;
 
 public class EtiquetaORM {
 
@@ -20,7 +17,6 @@ public class EtiquetaORM {
         em.getTransaction().begin();
         em.persist(etiqueta);
         em.getTransaction().commit();
-        em.close();
 
     }
 
@@ -29,12 +25,12 @@ public class EtiquetaORM {
         return count;
     }
 
-    public void editarEtiqueta(Etiqueta editar) {
+    public void editarEtiqueta(Etiqueta editar, String etiqueta) {
         em.getTransaction().begin();
-        Etiqueta u = em.find(Etiqueta.class, editar.getId_etiqueta());
-        u = editar;
+        editar.setEtiqueta(etiqueta);
+        em.merge(editar);
         em.getTransaction().commit();
-        em.close();
+        
     }
 
     public void borrarEtiqueta(Long id) {
@@ -42,6 +38,22 @@ public class EtiquetaORM {
         Etiqueta u = em.find(Etiqueta.class, id);
         em.remove(u);
         em.getTransaction().commit();
-        em.close();
+        
     }
+
+    public List<Etiqueta> getEtiquetas(Long idArticulo){
+        String sql = "";
+        List<Etiqueta> etiquetas = em.createQuery(
+                "select e.listaEtiqueta from Articulo e where e.id = ?1")
+                .setParameter(1,idArticulo)
+                .getResultList();
+
+        return etiquetas;
+    }
+    public Etiqueta getEtiquetaNombre(String etiqueta){
+        Query query = em.createQuery("select e from Etiqueta e where e.etiqueta = ?1")
+                .setParameter(1, etiqueta);
+        return (Etiqueta) query.getSingleResult();
+    }
+
 }

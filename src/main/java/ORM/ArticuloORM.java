@@ -1,15 +1,12 @@
 package ORM;
 
 import clases.Articulo;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import java.util.Iterator;
+import java.util.List;
 
 public class ArticuloORM {
 
@@ -20,21 +17,21 @@ public class ArticuloORM {
         em.getTransaction().begin();
         em.persist(articulo);
         em.getTransaction().commit();
-        em.close();
 
     }
 
-    public Long countArticulos() {
-        Long count = ((Number) em.createNativeQuery("select count(Articulo.id) from USUARIO").getSingleResult()).longValue();
+    public float countArticulos() {
+        float count = ((Number) em.createNativeQuery("select count(Articulo.id) from ARTICULO").getSingleResult()).floatValue();
         return count;
     }
 
-    public void editarArticulo(Articulo editar) {
+    public void editarArticulo(Articulo a, String titulo, String cuerpo) {
         em.getTransaction().begin();
-        Articulo a = em.find(Articulo.class, editar.getId());
-        a = editar;
+        a.setTitulo(titulo);
+        a.setCuerpo(cuerpo);
+        em.merge(a);
         em.getTransaction().commit();
-        em.close();
+
     }
 
     public void borrarArticulo(Long id) {
@@ -42,6 +39,41 @@ public class ArticuloORM {
         Articulo u = em.find(Articulo.class, id);
         em.remove(u);
         em.getTransaction().commit();
-        em.close();
+        
     }
+
+    public List<Articulo> listarArticulos(int pagina){
+
+        Query query = em.createQuery("select a from Articulo a order by fecha desc")
+                .setFirstResult(5*(pagina-1))
+                .setMaxResults(5);
+
+        return (List<Articulo>)query.getResultList();
+    }
+
+    public Articulo getArticulo(Long id){
+        Query query = em.createQuery("select a from Articulo a where a.id = :id")
+                .setParameter("id", id);
+        return (Articulo) query.getSingleResult();
+    }
+
+
+
+    public Long countLikes(Long idArticulo){
+        Long count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = true")
+                .setParameter(1, idArticulo)
+                .getSingleResult()).longValue();
+
+        return count;
+    }
+
+    public Long countDislikes(Long idArticulo){
+        Long count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = false")
+                .setParameter(1, idArticulo)
+                .getSingleResult()).longValue();
+
+        return count;
+    }
+
+
 }

@@ -1,15 +1,9 @@
-import ORM.ArticuloORM;
-import ORM.ComentarioORM;
-import ORM.EtiquetaORM;
-import ORM.UsuarioORM;
-import ORM.UsuarioORM;
-import clases.Articulo;
-import clases.Comentario;
-import clases.Etiqueta;
-import clases.Usuario;
+import ORM.*;
+import clases.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.jasypt.util.text.StrongTextEncryptor;
+import spark.Session;
 
 import java.io.StringWriter;
 import java.sql.Date;
@@ -41,6 +35,7 @@ public class Main {
         ORM.ArticuloORM articuloORM = new ArticuloORM();
         ORM.EtiquetaORM etiquetaORM = new EtiquetaORM();
         ORM.ComentarioORM comentarioORM = new ComentarioORM();
+        ORM.ReaccionORM reaccionORM = new ReaccionORM();
 
         before("/", (req, res) -> {
             if (req.cookie("cookieSesion") != null) {
@@ -59,8 +54,75 @@ public class Main {
                 }
             }
 
+            res.redirect("/inicio?pagina=1");
+
+        });
+
+        get("/inicio", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atr = new HashMap<>();
+            Template template = configuration.getTemplate("templates/home.ftl");
+
+            int pagina = Integer.parseInt(req.queryParams("pagina"));
+            int maxPagina = (int) Math.ceil(articuloORM.countArticulos() / 5);
+            List<Articulo> articuloList = articuloORM.listarArticulos(pagina);
+
+            for(int i = 0; i < articuloList.size(); i++){
+                articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
+            }
+
+            atr.put("pagina", pagina);
+
+            if(pagina >= maxPagina){
+                atr.put("valorSiguiente", 0);
+            }else{
+                atr.put("valorSiguiente", 1);
+            }
+
+            if(pagina <= 1){
+                atr.put("valorAnterior", 0);
+                System.out.println(pagina);
+            }else{
+                atr.put("valorAnterior", 1);
+            }
+
+            atr.put("anterior", (pagina - 1));
+            atr.put("siguiente", (pagina + 1));
+
+            atr.put("admin",usuarioLogeado.isAdministrator());
+            atr.put("autor",usuarioLogeado.isAutor());
+            atr.put("LosArticulos",articuloList);
+            template.process(atr,writer);
+            return writer;
+        });
 
 
+        get("/homeTags/:etiqueta", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atr = new HashMap<>();
+            Template template = configuration.getTemplate("templates/homeTags.ftl");
+
+            List<Articulo> articuloList = articuloORM.listarArticulos(1);
+
+            for(int i = 0; i < articuloList.size(); i++){
+                articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
+            }
+
+            ArrayList<Articulo> filtrados = new ArrayList<>();
+
+            for(int j = 0; j < articuloList.size(); j++){
+                for(int k = 0; k < articuloList.get(j).getListaEtiqueta().size(); k++){
+                    if(articuloList.get(j).getListaEtiqueta().get(k).getEtiqueta().equals(req.params("etiqueta"))){
+                        filtrados.add(articuloList.get(j));
+                    }
+                }
+            }
+            atr.put("admin",usuarioLogeado.isAdministrator());
+            atr.put("autor",usuarioLogeado.isAutor());
+            atr.put("LosArticulos",filtrados);
+            atr.put("etiquetaFiltro",req.params("etiqueta"));
+            template.process(atr,writer);
+            return writer;
         });
 
         get("/login", (req, res) -> {
@@ -71,6 +133,8 @@ public class Main {
 
             return writer;
         });
+
+
 
         post("/login", (req, res) -> {
 
@@ -88,7 +152,7 @@ public class Main {
                     String encrypt = textEncryptor.encrypt(sesion);
 
                     res.cookie("/", "sesion", encrypt, 604800, false);
-                   // usuarioORM.saveCookies(usuarioLogeado.getId(),req.session().id());
+                    usuarioORM.saveCookies(usuarioLogeado.getId(),req.session().id());
                 }
 
                 res.redirect("/");
@@ -100,22 +164,8 @@ public class Main {
             return null;
         });
 
-        get("/", (req, res) -> {
-            StringWriter writer = new StringWriter();
-            Map<String, Object> atr = new HashMap<>();
-            Template template = configuration.getTemplate("templates/home.ftl");
 
-        /*    List<Articulo> articuloList = articuloORM.listarArticulos();
-            for(int i = 0; i < articuloList.size(); i++){
-                articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
-            }
-            */
-            atr.put("admin",usuarioLogeado.isAdministrator());
-            atr.put("autor",usuarioLogeado.isAutor());
-          //  atr.put("LosArticulos",articuloList);
-            template.process(atr,writer);
-            return writer;
-        });
+
 
         get("/logout", (req, res) -> {
             StringWriter writer = new StringWriter();
@@ -123,7 +173,8 @@ public class Main {
 
             usuarioLogeado.setAutor(false);
             usuarioLogeado.setAdministrator(false);
-
+            Session ses = req.session(true);
+            ses.invalidate();
             res.redirect("/");
             return writer;
         });
@@ -198,23 +249,24 @@ public class Main {
 
         path("/articulo", () -> {
 
-         /*   get("/:id", (req, res) -> {
+            get("/:id", (req, res) -> {
                 StringWriter writer = new StringWriter();
                 Map<String, Object> atributos = new HashMap<>();
+                Usuario usuario = req.session(true).attribute("usuario");
                 Template template = configuration.getTemplate("templates/indexArticulo.ftl");
-                System.out.println(req.params("id"));
-                Articulo articulo = articuloORM.getArticuloId(Long.parseLong(req.params("id")));
+                Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
+                Long likes = articuloORM.countLikes(articulo.getId());
+                Long dislikes = articuloORM.countDislikes(articulo.getId());
                 articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
                 articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
                 atributos.put("articulo", articulo);
-                atributos.put("username", nombreLogeado);
-                atributos.put("admin", usuarioLogeado.isAdministrator());
-                atributos.put("autor", usuarioLogeado.isAutor());
+                atributos.put("usuario",usuarioLogeado);
+                atributos.put("likes",likes);
+                atributos.put("dislikes",dislikes);
                 template.process(atributos, writer);
 
                 return writer;
             });
-            */
 
 
 
@@ -222,16 +274,35 @@ public class Main {
                 Long idArticulo = Long.parseLong(req.params("id"));
                 String comentario = req.queryParams("comentario");
                 Long autor = usuarioLogeado.getId();
-                Comentario c = new Comentario(comentario,usuarioLogeado);
-                /*
-                Long countComentario = 0L;
-                if(comentarioORM.countComentario() != 0){
-                    countComentario =  comentarioORM.lastComentario();
-                }
-                comentarioORM.insertarComentario(c);
-                articuloORM.insertarArticuloComentario(idArticulo,countComentario);
+                Comentario c = new Comentario(comentario,usuarioLogeado,articuloORM.getArticulo(idArticulo));
+                System.out.println(c.getComentario());
+
+                comentarioORM.guardarComentario(c);
                 res.redirect("/articulo/" + idArticulo);
-                */
+                return null;
+            });
+
+            get("/:id/like", (req, res) -> {
+                    Long idArticulo = Long.parseLong(req.params("id"));
+                    Articulo articulo = articuloORM.getArticulo(idArticulo);
+                    System.out.println(idArticulo);
+                    reaccionORM.guardarLike(new Reaccion(articulo,usuarioLogeado,true));
+                    res.redirect("/articulo/" + idArticulo);
+
+
+
+                return null;
+            });
+
+            get("/:id/dislike", (req, res) -> {
+                Long idArticulo = Long.parseLong(req.params("id"));
+                Articulo articulo = articuloORM.getArticulo(idArticulo);
+                System.out.println(idArticulo);
+                reaccionORM.guardarLike(new Reaccion(articulo,usuarioLogeado,false));
+                res.redirect("/articulo/" + idArticulo);
+
+
+
                 return null;
             });
 
@@ -241,10 +312,9 @@ public class Main {
                     Map<String, Object> atributos = new HashMap<>();
                     Template template = configuration.getTemplate("templates/eliminarArticulo.ftl");
 
+                    Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
 
-                    //Articulo articulo = articuloORM.getArticuloId(Long.parseLong(req.params("id")));
-
-                  //  atributos.put("articulo", articulo);
+                    atributos.put("articulo", articulo);
                     template.process(atributos, writer);
 
                     return writer;
@@ -259,9 +329,9 @@ public class Main {
                 Map<String, Object> atributos = new HashMap<>();
                 Template template = configuration.getTemplate("templates/editarArticulo.ftl");
 
-          //      Articulo articulo = articuloORM.getArticuloId(Long.parseLong(req.params("id")));
+                Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
 
-             //   atributos.put("articulo", articulo);
+                atributos.put("articulo", articulo);
                 atributos.put("autor", usuarioLogeado.isAutor());
                 atributos.put("admin", usuarioLogeado.isAdministrator());
                 template.process(atributos, writer);
@@ -284,8 +354,15 @@ public class Main {
             long id = Integer.parseInt(req.params("id"));
             String titulo = req.queryParams("titulo");
             String cuerpo = req.queryParams("cuerpo");
+            String etiquetas = req.queryParams("etiquetas");
+            List<String> listaEtiquetas = Arrays.asList(etiquetas.split(","));
 
-       //     articuloORM.editarArticulo(id,titulo,cuerpo);
+            Articulo art = articuloORM.getArticulo(id);
+            for(int i = 0; i < art.getListaEtiqueta().size(); i++){
+                etiquetaORM.editarEtiqueta(art.getListaEtiqueta().get(i),listaEtiquetas.get(i));
+            }
+
+            articuloORM.editarArticulo(art,titulo,cuerpo);
 
             res.redirect("/");
 
@@ -293,7 +370,6 @@ public class Main {
         });
 
         path("/usuario", () -> {
-            //Ruta para agregar un estudiante
             get("/crearUsuario", (req, res) -> {
                 StringWriter writer = new StringWriter();
                 Template temp = configuration.getTemplate("templates/crearUsuario.ftl");

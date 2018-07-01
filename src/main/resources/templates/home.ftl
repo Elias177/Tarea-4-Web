@@ -22,7 +22,7 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-dark" id = "custom-nav">
-    <a href="/"> </a>
+    <a href="/">Home</a>
 
                                 <ul class="nav navbar-nav">
                                         <#if admin || autor>
@@ -95,11 +95,9 @@
                     <strong class="text-danger m-0">
 
                             <#if articulo.listaEtiqueta?size gt 0>
-                                <span class="label label-default">
                                     <#list articulo.listaEtiqueta as etiqueta>
-                                        ${etiqueta.etiqueta}
+                                        <a href="homeTags/${etiqueta.etiqueta}" class="label label-default"">${etiqueta.etiqueta}</a>
                                     </#list>
-                                </span>
                             </#if>
                     </strong>
                 </div>
@@ -109,5 +107,23 @@
     </div>
     </div>
 
+
+
 </body>
+<footer>
+    <div class="container">
+        <ul class="pagination">
+            <#if valorAnterior == 1>
+					<li><a class="active" href="/inicio?pagina=${anterior}">&lt;&lt; Anterior</a></li>
+
+            </#if>
+
+            <#if valorSiguiente == 1>
+                <li><a class="active" href="/inicio?pagina=${siguiente}">Siguiente &gt;&gt;</a></li>
+            </#if>
+
+        </ul>
+    </div>
+
+</footer>
 </html>

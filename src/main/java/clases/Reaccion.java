@@ -1,17 +1,12 @@
 package clases;
 
-import com.sun.istack.internal.Nullable;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Reaccion {
 
     @Id
     @GeneratedValue
-    @Column(name="LIKESARTICULO_ID")
     private Long id;
 
     @ManyToOne
@@ -25,7 +20,14 @@ public class Reaccion {
     @Column(name="reaccion")
     boolean reaccion;
 
+    public Reaccion(Articulo articulo, Usuario usuario, boolean reaccion) {
+        this.articulo = articulo;
+        this.usuario = usuario;
+        this.reaccion = reaccion;
+    }
 
+    public Reaccion() {
+    }
 
     public Long getId() {
         return id;

@@ -22,7 +22,7 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-dark" id = "custom-nav">
-    <a href="/"> </a>
+    <a href="/">Home</a>
 
                                 <ul class="nav navbar-nav">
                                         <#if admin || autor>
@@ -62,6 +62,7 @@
                                 </#if>
 
 </nav>
+<h2>Articulos con la etiqueta: <strong>${etiquetaFiltro}</strong></h2>
 <div class="col-12 p-2">
     <div class="row">
         <#list LosArticulos as articulo>
