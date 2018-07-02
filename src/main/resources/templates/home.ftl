@@ -1,67 +1,49 @@
-
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-
+    <meta charset="utf-8">
     <title>Blog de Web</title>
-    <link rel="stylesheet" href="/public/styles/style.css">
-
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/lumen/bootstrap.min.css" rel="stylesheet" integrity="sha384-87sz15XXg/vK1YUT8aQFH3EIw5aC/jbpolvTC264SVJfjOIBWv0V/o2FyyKclY8G" crossorigin="anonymous">
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-dark" id = "custom-nav">
-    <a href="/">Home</a>
+<nav class="navbar navbar-dark bg-primary">
+    <a class="navbar-brand" href="/">Blog Uchiha</a>
 
-                                <ul class="nav navbar-nav">
-                                        <#if admin || autor>
-                                    <li class="nav-item">
-                                        <a class="btn btn-link text-light" href="/agregarArticulo">
-                                            Crear artículo
-                                        </a>
-                                    </li>
-                                        </#if>
-                                    <#if admin>
-                                        <li class="nav-item">
-                                            <a class="btn btn-link text-light" href="usuario/crearUsuario">
-                                                Nuevo usuario
-                                            </a>
-                                        </li>
-                                    </#if>
+    <ul class="nav navbar-nav">
 
-                                </ul>
+      <#if admin || autor>
+      <li class="nav-item">
+          <a class="btn btn-link text-light" href="/agregarArticulo">Crear artículo</a>
+      </li>
+      </#if>
+      <#if admin>
+      <li class="nav-item">
+          <a class="btn btn-link text-light" href="usuario/crearUsuario">Nuevo usuario</a>
+      </li>
+      </#if>
 
-                                <#if admin || autor>
-                                    <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
-                                            <a href="/logout">
-                                                Log out
-                                            </a>
-                                        </li>
-                                    </ul>
-                                <#else>
-                                <ul class="navbar-nav ml-auto">
-                                    <a href="/login">
-                                        Log in
-                                    </a>
-                                </li>
+    </ul>
 
-                                </ul>
-
-                                </#if>
-
+    <#if admin || autor>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a href="/logout">Log out</a>
+        </li>
+    </ul>
+    <#else>
+   <ul class="nav navbar-brand navbar-right">
+       <a style="color:white;" href="/login"><i class="fas fa-sign-in-alt"></i> Log in</a>
+   </ul>
+    </#if>
 </nav>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
 <div class="col-12 p-2">
     <div class="row">
         <#list LosArticulos as articulo>
