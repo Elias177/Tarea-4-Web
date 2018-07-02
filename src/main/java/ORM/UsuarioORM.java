@@ -2,10 +2,7 @@ package ORM;
 
 import clases.Usuario;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 
 public class UsuarioORM {
 
@@ -59,10 +56,15 @@ public class UsuarioORM {
 
     public Usuario getUsuario(String nombre,String pass){
 
-        Query query = em.createQuery("select u from Usuario u where u.username = :user AND u.password = :pass")
-            .setParameter("user", nombre)
-            .setParameter("pass", pass);
-        return (Usuario)query.getSingleResult();
+        try{
+            Query query = em.createQuery("select u from Usuario u where u.username = :user AND u.password = :pass")
+                    .setParameter("user", nombre)
+                    .setParameter("pass", pass);
+            return (Usuario)query.getSingleResult();
+        } catch(NoResultException e){
+            return null;
+        }
+
     }
 
     public void saveCookies(Long id,String sesion){
