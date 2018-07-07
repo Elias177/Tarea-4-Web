@@ -67,11 +67,16 @@ public class UsuarioORM {
 
     }
 
-    public void saveCookies(Long id,String sesion){
-        em.getTransaction().begin();
-        Usuario u = em.find(Usuario.class,id);
-        u.setCookies(sesion);
-        em.getTransaction().commit();
-        
+    public Usuario getUsuarioUsername(String nombre){
+
+        try{
+            Query query = em.createQuery("select u from Usuario u where u.username = :user")
+                    .setParameter("user", nombre);
+            return (Usuario)query.getSingleResult();
+        } catch(NoResultException e){
+            return null;
+        }
+
     }
+
 }

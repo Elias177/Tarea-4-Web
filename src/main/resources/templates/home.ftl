@@ -14,20 +14,25 @@
 
     <ul class="nav navbar-nav">
 
-      <#if admin || autor>
+      <#if usuario??>
+        <#if usuario.administrator || usuario.autor>
       <li class="nav-item">
           <a class="btn btn-link text-light" href="/agregarArticulo">Crear artículo</a>
       </li>
+         </#if>
       </#if>
-      <#if admin>
-      <li class="nav-item">
-          <a class="btn btn-link text-light" href="usuario/crearUsuario">Nuevo usuario</a>
-      </li>
-      </#if>
+        <#if usuario??>
+            <#if usuario.administrator>
+              <li class="nav-item">
+                  <a class="btn btn-link text-light" href="usuario/crearUsuario">Nuevo usuario</a>
+              </li>
+            </#if>
+        </#if>
+
 
     </ul>
 
-    <#if admin || autor>
+    <#if usuario??>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
             <a href="/logout">Log out</a>

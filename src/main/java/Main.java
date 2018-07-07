@@ -2,7 +2,7 @@ import ORM.*;
 import clases.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.jasypt.util.text.StrongTextEncryptor;
+import org.jasypt.util.text.BasicTextEncryptor;
 import spark.Session;
 
 import java.io.StringWriter;
@@ -37,28 +37,43 @@ public class Main {
         ORM.ComentarioORM comentarioORM = new ComentarioORM();
         ORM.ReaccionORM reaccionORM = new ReaccionORM();
 
-        before("/", (req, res) -> {
-            if (req.cookie("cookieSesion") != null) {
-                StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
-                textEncryptor.setPassword("mangekyouSharingan42");
-                String sesion = textEncryptor.decrypt(req.cookie("cookieSesion"));
+        before("/agregarArticulo", (request, response) -> {
+            // ... check if authenticated
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
 
-                Usuario oldUsuario = usuarioORM.getSesion(sesion);
-                nombreLogeado = oldUsuario.getUsername();
-                usuarioLogeado = oldUsuario;
-                req.session().attribute("sesion", oldUsuario);
+        before("/agregarUsuario", (request, response) -> {
+            // ... check if authenticated
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
 
-                if (oldUsuario != null) {
-                    req.session(true);
-                    req.session().attribute("sesion", oldUsuario);
-                }
+
+        get("/", (req, res) -> {
+
+            Usuario usuario = req.session(true).attribute("usuario");
+            System.out.println(usuario);
+            if(usuario == null && req.cookie("username") != null){
+                BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+                textEncryptor.setPasswordCharArray("mangekyouSharingan42".toCharArray());
+                req.session(true);
+                req.session().attribute("usuario", usuarioORM.getUsuarioUsername(textEncryptor.decrypt(req.cookie("username"))));
+                res.redirect("/");
             }
 
             res.redirect("/inicio?pagina=1");
-
+            return "";
         });
 
+
         get("/inicio", (req, res) -> {
+
+            Usuario usuario = req.session(true).attribute("usuario");
             StringWriter writer = new StringWriter();
             Map<String, Object> atr = new HashMap<>();
             Template template = configuration.getTemplate("templates/home.ftl");
@@ -89,8 +104,7 @@ public class Main {
             atr.put("anterior", (pagina - 1));
             atr.put("siguiente", (pagina + 1));
 
-            atr.put("admin",usuarioLogeado.isAdministrator());
-            atr.put("autor",usuarioLogeado.isAutor());
+            atr.put("usuario",usuario);
             atr.put("LosArticulos",articuloList);
             template.process(atr,writer);
             return writer;
@@ -103,6 +117,7 @@ public class Main {
             Template template = configuration.getTemplate("templates/homeTags.ftl");
 
             List<Articulo> articuloList = articuloORM.listarArticulos(1);
+            Usuario usuario = req.session(true).attribute("usuario");
 
             for(int i = 0; i < articuloList.size(); i++){
                 articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
@@ -139,8 +154,8 @@ public class Main {
 
             atr.put("anterior", (pagina - 1));
             atr.put("siguiente", (pagina + 1));
-            atr.put("admin",usuarioLogeado.isAdministrator());
-            atr.put("autor",usuarioLogeado.isAutor());
+            atr.put("admin",usuario.isAdministrator());
+            atr.put("autor",usuario.isAutor());
             atr.put("LosArticulos",filtrados);
             atr.put("etiquetaFiltro",req.params("etiqueta"));
             template.process(atr,writer);
@@ -153,6 +168,12 @@ public class Main {
             Template template = configuration.getTemplate("templates/login.ftl");
             template.process(atr, writer);
 
+            Map<String, String> cookies = req.cookies();
+            String salida="";
+            for(String key : cookies.keySet())
+                salida+=String.format("Cookie %s = %s", key, cookies.get(key));
+
+
             return writer;
         });
 
@@ -160,30 +181,25 @@ public class Main {
 
         post("/login", (req, res) -> {
 
-            nombreLogeado = req.queryParams("username");
+            String username = req.queryParams("username");
             String password = req.queryParams("password");
-            usuarioLogeado = usuarioORM.getUsuario(nombreLogeado, password);
-
-            if (usuarioLogeado != null) {
-                req.session().attribute("sesion", usuarioLogeado);
-
-                if (req.queryParams("keepLog") != null) {
-                    String sesion = req.session().id();
-                    StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
-                    textEncryptor.setPassword("mangekyouSharingan42");
-                    String encrypt = textEncryptor.encrypt(sesion);
-
-                    res.cookie("/", "sesion", encrypt, 604800, false);
-                    usuarioORM.saveCookies(usuarioLogeado.getId(),req.session().id());
+            Usuario usuario = usuarioORM.getUsuario(username, password);
+            String isRecordado = req.queryParams("keepLog");
+            if (usuario != null) {
+                req.session(true);
+                req.session().attribute("usuario", usuario);
+                if(isRecordado!=null){
+                    BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+                    textEncryptor.setPasswordCharArray("mangekyouSharingan42".toCharArray());
+                    res.cookie("/", "username",
+                            textEncryptor.encrypt(username), (60*60*24*7), false, true);
                 }
-
                 res.redirect("/");
             } else {
                 res.redirect("/login");
             }
+        return "";
 
-
-            return null;
         });
 
 
@@ -193,10 +209,9 @@ public class Main {
             StringWriter writer = new StringWriter();
             Map<String, Object> atr = new HashMap<>();
 
-            usuarioLogeado.setAutor(false);
-            usuarioLogeado.setAdministrator(false);
             Session ses = req.session(true);
             ses.invalidate();
+            res.removeCookie("username");
             res.redirect("/");
             return writer;
         });
@@ -234,8 +249,12 @@ public class Main {
 
         get("/agregarArticulo", (req, res) -> {
             StringWriter writer = new StringWriter();
+            Map<String, Object> atr = new HashMap<>();
             Template temp = configuration.getTemplate("templates/agregarArticulo.ftl");
 
+            Usuario usuario = req.session(true).attribute("usuario");
+            atr.put("titulo", "Publicar Artículo");
+            atr.put("usuario", usuario);
             temp.process(null, writer);
 
             return writer;
@@ -282,7 +301,7 @@ public class Main {
                 articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
                 articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
                 atributos.put("articulo", articulo);
-                atributos.put("usuario",usuarioLogeado);
+                atributos.put("usuario",usuario);
                 atributos.put("likes",likes);
                 atributos.put("dislikes",dislikes);
                 template.process(atributos, writer);
@@ -405,8 +424,6 @@ public class Main {
 
 
     }
-
-
 
 
 }
