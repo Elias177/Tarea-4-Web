@@ -46,13 +46,6 @@ public class UsuarioORM {
         
     }
 
-    public Usuario getSesion(String session){
-        Usuario u = (Usuario) em.createNativeQuery(
-                "select * from Usuario  where cookies = ?1")
-                .setParameter(1, session)
-                .getSingleResult();
-        return u;
-    }
 
     public Usuario getUsuario(String nombre,String pass){
 

@@ -22,7 +22,7 @@
                                 <#if articulo.listaEtiqueta?size gt 0>
                                  <textarea name="etiquetas" class="form-control rounded-0">
                                     <#list articulo.listaEtiqueta as etiqueta>
-${etiqueta.etiqueta},
+                                        ${etiqueta.etiqueta},
                                     </#list>
                                  </textarea>
                             </#if>

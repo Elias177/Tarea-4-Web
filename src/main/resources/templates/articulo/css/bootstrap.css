@@ -3379,7 +3379,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   line-height: 1;
   color: #555;
   text-align: center;
-  background-color: none;
+  background-color: no=
+  ne;
   border: 1px solid #ccc;
   border-radius: 4px;
 }

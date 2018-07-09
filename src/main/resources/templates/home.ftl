@@ -46,17 +46,24 @@
             <span class="menu"> </span>
             <ul>
                 <li class="active"><a href="/">HOME</a></li>
- 						 <#if admin || autor>
+                <#if usuario??>
+                    <#if usuario.administrator || usuario.autor>
   						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
-                         </#if>
- 						 <#if admin>
+                    </#if>
+                </#if>
+                <#if usuario??>
+                    <#if usuario.administrator>
   						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
-                         </#if>
- 						 <#if admin || autor>
+                    </#if>
+                </#if>
+
+                    <#if usuario??>
   						<li><a href="/logout">LOG OUT</a></li>
-                         <#else>
- 						 <li><a href="/login">																										LOG IN</a></li>
-                         </#if>
+                    <#else>
+                        <li><a href="/login">LOG IN </a></li>
+                    </#if>
+
+
                 <div class="clearfix"> </div>
             </ul>
         </div>

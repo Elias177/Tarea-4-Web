@@ -36,4 +36,12 @@ public class Reaccion {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public boolean isReaccion() {
+        return reaccion;
+    }
+
+    public void setReaccion(boolean reaccion) {
+        this.reaccion = reaccion;
+    }
 }

@@ -51,17 +51,22 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <span class="menu"> </span>
             <ul>
                 <li class="active"><a href="/">HOME</a></li>
-						 <#if admin || autor>
- 						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
-                         </#if>
-						 <#if admin>
- 						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
-                         </#if>
-						 <#if admin || autor>
- 						<li><a href="/logout">LOG OUT</a></li>
-                         <#else>
-						 <li><a href="/login">																										LOG IN</a></li>
-                         </#if>
+                <#if usuario??>
+                    <#if usuario.administrator || usuario.autor>
+  						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
+                    </#if>
+                </#if>
+                <#if usuario??>
+                    <#if usuario.administrator>
+  						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
+                    </#if>
+                </#if>
+
+                    <#if usuario??>
+  						<li><a href="/logout">LOG OUT</a></li>
+                    <#else>
+                        <li><a href="/login">LOG IN </a></li>
+                    </#if>
                 <div class="clearfix"> </div>
             </ul>
         </div>
@@ -82,6 +87,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
     <div class="single-grid">
         <h1 class="panel-title">${articulo.titulo}</h1>
         </br>
+                    <#if usuario??>
                         <#if usuario.administrator || usuario.autor>
                             <a href="editar/${articulo.id}" class="text-success ml-2">
                                 <button type="button" class="btn btn-warning">Editar</button>
@@ -93,6 +99,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                             </a>
 
                         </#if>
+                    </#if>
+
         <img src="images/bar1.jpg" alt=""/>
         <p>${articulo.cuerpo}</p>
 					<#if articulo.listaEtiqueta?size gt 0>
@@ -102,18 +110,29 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     </#if>
         <div>
             </br>
-					<#if usuario.password != "no" && usuario.username != "no">
+            <div>
+                 <span class="label label-default" style="color:cornflowerblue";>
+                        Likes: ${likes}
+                 </span>
+            </div>
+            <div>
+                <div>
+                    <span class="label label-default" style="color:crimson">
+                        Dislikes: ${dislikes}
+                    </span>
+                </div>
+					<#if usuario??>
 					<h5>
                         <form action="/articulo/${articulo.id}/like">
-                            <form action="/articulo/${articulo.id}/dislike">
+
                                 <button style="display: inline;" class="label label-primary" type="submit" >
                                     Like
                                 </button>
-
-                                <button style="display: inline;" class="label label-danger" type="submit">
-                                    Dislike
-                                </button>
-                            </form>
+                        </form>
+                        <form action="/articulo/${articulo.id}/dislike">
+                            <button style="display: inline;" class="label label-danger" type="submit">
+                                Dislike
+                            </button>
                         </form>
                     </h5>
                     </#if>
@@ -123,10 +142,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
 				 <#list articulo.listaComentarios as comentario>
 			 <ul class="comment-list">
-                 <h5 class="post-author_head">Written by <a href="#" title="Posts by admin" rel="author">${comentario.autor.username}</a></h5>
+                 <h5 class="post-author_head">Escrito por <a title="Posts by admin" rel="author">${comentario.autor.username}</a></h5>
                  <li><img src="images/avatar.png" class="img-responsive" alt="">
                      <div class="desc">
-                         <p> Comentarios: ${comentario.autor.username}</p>
+                         <p> ${comentario.comentario}</p>
                      </div>
                      <div class="clearfix"></div>
                  </li>
@@ -134,10 +153,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                  </#list>
 
 				  <div class="content-form">
-                     <#if usuario.password != "no" && usuario.username != "no">
+                     <#if usuario??>
                          <h3>Leave a comment</h3>
                          <form method="post" action="/articulo/${articulo.id}/comentar">
-                             <textarea placeholder="Message"></textarea>
+                             <textarea name="comentario" placeholder="Message"></textarea>
                              <input type="submit" value="SEND"/>
                          </form>
 						 </div>

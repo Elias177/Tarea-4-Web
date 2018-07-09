@@ -7,20 +7,18 @@ import spark.Session;
 
 import java.io.StringWriter;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.*;
 
 import static spark.Spark.*;
 
 public class Main {
 
-    static String nombreLogeado = "";
-    static Usuario usuarioLogeado;
 
 
-    public static void main(String[] args) {
-        staticFiles.location("/public");
-        Usuario noUser = new Usuario("no","no","no",false,false);
-        usuarioLogeado = noUser;
+    public static void main(String[] args) throws SQLException {
+        staticFiles.location("/templates");
+        org.h2.tools.Server.createTcpServer().start();
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setClassForTemplateLoading(Main.class, "/");
         ORM.UsuarioORM usuarioORM = new UsuarioORM();
@@ -38,7 +36,6 @@ public class Main {
         ORM.ReaccionORM reaccionORM = new ReaccionORM();
 
         before("/agregarArticulo", (request, response) -> {
-            // ... check if authenticated
             Usuario usuario = request.session(true).attribute("usuario");
             if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
                 response.redirect("/");
@@ -46,18 +43,29 @@ public class Main {
         });
 
         before("/agregarUsuario", (request, response) -> {
-            // ... check if authenticated
             Usuario usuario = request.session(true).attribute("usuario");
             if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
                 response.redirect("/");
             }
         });
 
+        before("/articulo/eliminar/:id", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
+
+        before("/articulo/editar/:id", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
 
         get("/", (req, res) -> {
 
             Usuario usuario = req.session(true).attribute("usuario");
-            System.out.println(usuario);
             if(usuario == null && req.cookie("username") != null){
                 BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
                 textEncryptor.setPasswordCharArray("mangekyouSharingan42".toCharArray());
@@ -98,14 +106,12 @@ public class Main {
 
             if(pagina <= 1){
                 atr.put("valorAnterior", 0);
-                System.out.println(pagina);
             }else{
                 atr.put("valorAnterior", 1);
             }
 
             atr.put("anterior", (pagina - 1));
             atr.put("siguiente", (pagina + 1));
-
             atr.put("usuario",usuario);
             atr.put("LosArticulos",articuloList);
             template.process(atr,writer);
@@ -257,9 +263,6 @@ public class Main {
             Map<String, Object> atr = new HashMap<>();
             Template temp = configuration.getTemplate("templates/agregarArticulo.ftl");
 
-            Usuario usuario = req.session(true).attribute("usuario");
-            atr.put("titulo", "Publicar Artículo");
-            atr.put("usuario", usuario);
             temp.process(null, writer);
 
             return writer;
@@ -267,6 +270,7 @@ public class Main {
 
         post("/agregarArticulo", (req, res) -> {
 
+            Usuario usuario = req.session(true).attribute("usuario");
             String titulo = req.queryParams("titulo");
             String cuerpo = req.queryParams("cuerpo");
             String etiquetas = req.queryParams("etiquetas");
@@ -281,7 +285,9 @@ public class Main {
 
             Date d = new Date(System.currentTimeMillis());
 
-            Articulo a =  new Articulo(titulo,cuerpo,usuarioLogeado,d,null,et);
+            Articulo a =  new Articulo(titulo,cuerpo,usuario,d,null,et);
+            a.setLikes(0);
+            a.setDislikes(0);
             articuloORM.guardarArticulo(a);
 
 
@@ -305,10 +311,19 @@ public class Main {
                 int dislikes = articuloORM.countDislikes(articulo.getId());
                 articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
                 articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
+
+                List<Articulo> articuloList = articuloORM.listarArticulos(1);
+
+                for(int i = 0; i < articuloList.size(); i++){
+                    articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
+                    articuloList.get(i).setLikes(articuloORM.countLikes(articuloList.get(i).getId()));
+                    articuloList.get(i).setDislikes(articuloORM.countDislikes(articuloList.get(i).getId()));
+                }
                 atributos.put("articulo", articulo);
                 atributos.put("usuario",usuario);
                 atributos.put("likes",likes);
                 atributos.put("dislikes",dislikes);
+                atributos.put("LosArticulos",articuloList);
                 template.process(atributos, writer);
 
                 return writer;
@@ -317,23 +332,32 @@ public class Main {
 
 
             post("/:id/comentar", (req, res) -> {
+                Usuario usuario = req.session(true).attribute("usuario");
                 Long idArticulo = Long.parseLong(req.params("id"));
                 String comentario = req.queryParams("comentario");
-                Long autor = usuarioLogeado.getId();
-                Comentario c = new Comentario(comentario,usuarioLogeado,articuloORM.getArticulo(idArticulo));
-                System.out.println(c.getComentario());
-
+                Comentario c = new Comentario(comentario,usuario,articuloORM.getArticulo(idArticulo));
                 comentarioORM.guardarComentario(c);
                 res.redirect("/articulo/" + idArticulo);
                 return null;
             });
 
             get("/:id/like", (req, res) -> {
+                    Usuario usuario = req.session(true).attribute("usuario");
                     Long idArticulo = Long.parseLong(req.params("id"));
                     Articulo articulo = articuloORM.getArticulo(idArticulo);
-                    System.out.println(idArticulo);
-                    reaccionORM.guardarLike(new Reaccion(articulo,usuarioLogeado,true));
-                    res.redirect("/articulo/" + idArticulo);
+                    Reaccion re = reaccionORM.checkLike(usuario,articulo);
+                    if(re == null){
+                        reaccionORM.guardarLike(new Reaccion(articulo,usuario,true));
+                        res.redirect("/articulo/" + idArticulo);
+                    }else{
+                        reaccionORM.deleteLike(re);
+
+                        if(!re.isReaccion())
+                        reaccionORM.updateLike(re,true);
+
+                        res.redirect("/articulo/" + idArticulo);
+                    }
+
 
 
 
@@ -341,32 +365,35 @@ public class Main {
             });
 
             get("/:id/dislike", (req, res) -> {
+                Usuario usuario = req.session(true).attribute("usuario");
                 Long idArticulo = Long.parseLong(req.params("id"));
                 Articulo articulo = articuloORM.getArticulo(idArticulo);
-                System.out.println(idArticulo);
-                reaccionORM.guardarLike(new Reaccion(articulo,usuarioLogeado,false));
-                res.redirect("/articulo/" + idArticulo);
+                Reaccion re = reaccionORM.checkLike(usuario,articulo);
+                if(re == null){
+                    reaccionORM.guardarLike(new Reaccion(articulo,usuario,false));
+                    res.redirect("/articulo/" + idArticulo);
+                }else{
+                    reaccionORM.deleteLike(re);
 
+                    if(re.isReaccion())
+                    reaccionORM.updateLike(re,false);
 
+                    res.redirect("/articulo/" + idArticulo);
+                }
 
                 return null;
             });
 
             get("/eliminar/:id", (req, res) -> {
-                if (usuarioLogeado.isAdministrator() || usuarioLogeado.isAutor()) {
                     StringWriter writer = new StringWriter();
                     Map<String, Object> atributos = new HashMap<>();
                     Template template = configuration.getTemplate("templates/eliminarArticulo.ftl");
 
                     Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
-
                     atributos.put("articulo", articulo);
                     template.process(atributos, writer);
 
                     return writer;
-                }
-                res.redirect("/");
-                return null;
             });
 
 
@@ -378,8 +405,6 @@ public class Main {
                 Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
 
                 atributos.put("articulo", articulo);
-                atributos.put("autor", usuarioLogeado.isAutor());
-                atributos.put("admin", usuarioLogeado.isAdministrator());
                 template.process(atributos, writer);
 
                 return writer;
@@ -388,10 +413,8 @@ public class Main {
         });
 
         post("/eliminar/:id", (req, res) -> {
-            if (usuarioLogeado.isAdministrator() || usuarioLogeado.isAutor()) {
-                articuloORM.borrarArticulo(Long.valueOf(req.params("id")));
-            }
-            res.redirect("/");
+            articuloORM.borrarArticulo(Long.valueOf(req.params("id")));
+            res.redirect("/inicio?pagina=1");
             return null;
         });
 
