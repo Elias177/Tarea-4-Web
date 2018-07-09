@@ -1,5 +1,7 @@
 package clases;
 
+import com.sun.istack.internal.Nullable;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
@@ -39,8 +41,11 @@ public class Articulo {
     @JoinTable(name = "ARTICULO_ETIQUETA", joinColumns = { @JoinColumn(name = "ARTICULO_ID") }, inverseJoinColumns = { @JoinColumn(name = "LISTAETIQUETA_ID_ETIQUETA") })
     private List<Etiqueta> listaEtiqueta;
 
-    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL)
-    Set<Reaccion> reaccionSet = new HashSet<>();
+    @Nullable
+    private int likes;
+
+    @Nullable
+    private int dislikes;
 
     public boolean isActivo() {
         return activo;
@@ -65,6 +70,22 @@ public class Articulo {
     public List<Comentario> getListaComentarios() {
 
         return listaComentarios;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
     }
 
     public void setListaComentarios(List<Comentario> listaComentarios) {

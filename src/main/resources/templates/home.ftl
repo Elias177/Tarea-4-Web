@@ -1,105 +1,147 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>Blog de Web</title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/lumen/bootstrap.min.css" rel="stylesheet" integrity="sha384-87sz15XXg/vK1YUT8aQFH3EIw5aC/jbpolvTC264SVJfjOIBWv0V/o2FyyKclY8G" crossorigin="anonymous">
+    <title>BLOG DEL CLAN UCHICHA!</title>
+    <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+    <link href="css/style.css" rel='stylesheet' type='text/css' />
+
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!----webfonts---->
+    <link href='http://fonts.googleapis.com/css?family=Oswald:100,400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,300italic' rel='stylesheet' type='text/css'>
+    <!----//webfonts---->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!--end slider -->
+    <!--script-->
+    <script type="text/javascript" src="js/move-top.js"></script>
+    <script type="text/javascript" src="js/easing.js"></script>
+    <!--/script-->
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event){
+                event.preventDefault();
+                $('html,body').animate({scrollTop:$(this.hash).offset().top},900);
+            });
+        });
+    </script>
+    <!---->
+
 </head>
 <body>
+<!---header---->
+<div class="header">
+    <div class="container">
+        <div class="logo">
+            <a href="/"><img src="images/logo.jpg" title="" /></a>
+        </div>
+        <!---start-top-nav---->
+        <div class="top-menu">
+            <div class="search">
+                <form>
+                    <input type="text" placeholder="" required="">
+                    <input type="submit" value=""/>
+                </form>
+            </div>
+            <span class="menu"> </span>
+            <ul>
+                <li class="active"><a href="/">HOME</a></li>
+ 						 <#if admin || autor>
+  						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
+                         </#if>
+ 						 <#if admin>
+  						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
+                         </#if>
+ 						 <#if admin || autor>
+  						<li><a href="/logout">LOG OUT</a></li>
+                         <#else>
+ 						 <li><a href="/login">																										LOG IN</a></li>
+                         </#if>
+                <div class="clearfix"> </div>
+            </ul>
+        </div>
+        <div class="clearfix"></div>
+        <script>
+            $("span.menu").click(function(){
+                $(".top-menu ul").slideToggle("slow" , function(){
+                });
+            });
+        </script>
+        <!---//End-top-nav---->
+    </div>
+</div>
 
-<nav class="navbar navbar-dark bg-primary">
-    <a class="navbar-brand" href="/">Blog Uchiha</a>
-
-    <ul class="nav navbar-nav">
-
-      <#if usuario??>
-        <#if usuario.administrator || usuario.autor>
-      <li class="nav-item">
-          <a class="btn btn-link text-light" href="/agregarArticulo">Crear artículo</a>
-      </li>
-         </#if>
-      </#if>
-        <#if usuario??>
-            <#if usuario.administrator>
-              <li class="nav-item">
-                  <a class="btn btn-link text-light" href="usuario/crearUsuario">Nuevo usuario</a>
-              </li>
-            </#if>
-        </#if>
-
-
-    </ul>
-
-    <#if usuario??>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a href="/logout">Log out</a>
-        </li>
-    </ul>
-    <#else>
-   <ul class="nav navbar-brand navbar-right">
-       <a style="color:white;" href="/login"><i class="fas fa-sign-in-alt"></i> Log in</a>
-   </ul>
-    </#if>
-</nav>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
-
-<div class="col-12 p-2">
-    <div class="row">
-        <#list LosArticulos as articulo>
-<div class="container">
-    <div class="left-panel">
-        <div class="col-xs-12 col-sm-6 col-lg-8">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <h3 class="card-title">${articulo.titulo}</h3>
-                            <div class="col-sm-3">
-                                <h4 class="pull-right">
-                                    <i class="fas fa-calendar-alt"></i> ${articulo.fecha}
-                                </h4>
+<!--/header-->
+<div class="content">
+    <div class="container">
+        <div class="content-grids">
+            <div class="col-md-8 content-main">
+                <div class="content-grid">
+                <div class="content-grid-info">
+						 <#list LosArticulos as articulo>
+                        <img src="images/bar1.jpg" alt=""/>
+						 <div class="post-info">
+                             <#if articulo.cuerpo?length &lt; 71>
+                                 <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                 <p>${articulo.cuerpo}</p>
+                                 <a href="/articulo/${articulo.id}"><span></span>READ MORE</a><p>        </p>
+                                 <#if articulo.listaEtiqueta?size gt 0>
+                                     <#list articulo.listaEtiqueta as etiqueta>
+                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a><p>        </p>
+                                     </#list>
+                                 </#if>
+                                 <h6><span class="label label-primary">Likes: ${articulo.likes}</span> <span class="label label-danger">Dislikes: ${articulo.dislikes}</span></h6>
+						 </div>
+					 </div>
+                             <#else>
+						<div class="content-grid-info">
+                            <div class="post-info">
+                                <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                <p>${articulo.cuerpo?substring(0,70)}...</p>
+                                <a href="/articulo/${articulo.id}"><span></span>READ MORE</a><p>        </p>
+                                 <#if articulo.listaEtiqueta?size gt 0>
+                                     <#list articulo.listaEtiqueta as etiqueta>
+                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
+                                     </#list>
+                                 </#if>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <#if articulo.cuerpo?length &lt; 71>
-                    <div class="panel-body">${articulo.cuerpo}
-                        <a href="/articulo/${articulo.id}">Leer más...</a>
-                    </div>
-                <#else>
-                    <div class="panel-body">${articulo.cuerpo?substring(0,70)}...
-                        <a href="/articulo/${articulo.id}">Leer más...</a>
-                    </div>
-                </#if>
+                             </#if>
+                         </#list>
 
-                <div class="card-footer p-2">
-                    <strong class="text-danger m-0">
+                    <div class="col-md-4 content-right">
+                        <div class="recent">
+                            <h3>RECENT POSTS</h3>
+                            <#list LosArticulos as articulo>
+                            <ul>
+                                <li><a href="/articulo/${articulo.id}">${articulo.titulo}</a></li>
 
-                            <#if articulo.listaEtiqueta?size gt 0>
-                                    <#list articulo.listaEtiqueta as etiqueta>
-                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-default"">${etiqueta.etiqueta}</a>
-                                    </#list>
-                            </#if>
-                    </strong>
+                            </ul>
+                            </#list>
+                        </div>
+
+
+                        <div class="comments">
+                            <h3>RECENT COMMENTS</h3>
+                            <ul>
+                                <li><a href="#">Amada Doe </a> on <a href="#">Hello World!</a></li>
+                                <li><a href="#">Peter Doe </a> on <a href="#"> Photography</a></li>
+                                <li><a href="#">Steve Roberts  </a> on <a href="#">HTML5/CSS3</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>
-        </#list>
-    </div>
-    </div>
-
-
-
-</body>
-<footer>
-    <div class="container">
-        <ul class="pagination">
+        <!---->
+        <div class="footer">
+            <div class="container">
+                <ul class="pagination">
             <#if valorAnterior == 1>
 					<li><a class="active" href="/inicio?pagina=${anterior}">&lt;&lt; Anterior</a></li>
 
@@ -109,8 +151,7 @@
                 <li><a class="active" href="/inicio?pagina=${siguiente}">Siguiente &gt;&gt;</a></li>
             </#if>
 
-        </ul>
-    </div>
-
-</footer>
-</html>
+                </ul>
+                <p>Copyrights © 2015 Blog All rights reserved | Template by <a href="http://w3layouts.com/">W3layouts</a></p>
+            </div>
+        </div>

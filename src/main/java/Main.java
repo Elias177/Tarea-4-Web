@@ -84,6 +84,8 @@ public class Main {
 
             for(int i = 0; i < articuloList.size(); i++){
                 articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
+                articuloList.get(i).setLikes(articuloORM.countLikes(articuloList.get(i).getId()));
+                articuloList.get(i).setDislikes(articuloORM.countDislikes(articuloList.get(i).getId()));
             }
 
             atr.put("pagina", pagina);
@@ -131,7 +133,10 @@ public class Main {
             for(int j = 0; j < articuloList.size(); j++){
                 for(int k = 0; k < articuloList.get(j).getListaEtiqueta().size(); k++){
                     if(articuloList.get(j).getListaEtiqueta().get(k).getEtiqueta().equals(req.params("etiqueta"))){
+                        articuloList.get(j).setLikes(articuloORM.countLikes(articuloList.get(j).getId()));
+                        articuloList.get(j).setDislikes(articuloORM.countDislikes(articuloList.get(j).getId()));
                         filtrados.add(articuloList.get(j));
+
                     }
                 }
             }
@@ -296,8 +301,8 @@ public class Main {
                 Usuario usuario = req.session(true).attribute("usuario");
                 Template template = configuration.getTemplate("templates/indexArticulo.ftl");
                 Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
-                Long likes = articuloORM.countLikes(articulo.getId());
-                Long dislikes = articuloORM.countDislikes(articulo.getId());
+                int likes = articuloORM.countLikes(articulo.getId());
+                int dislikes = articuloORM.countDislikes(articulo.getId());
                 articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
                 articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
                 atributos.put("articulo", articulo);

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tarea_4_Web.iml" filepath="$PROJECT_DIR$/.idea/modules/Tarea_4_Web.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tarea_4_Web_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Tarea_4_Web_main.iml" group="Tarea_4_Web" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tarea_4_Web_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Tarea_4_Web_test.iml" group="Tarea_4_Web" />
+      <module fileurl="file://$PROJECT_DIR$/src/main/main.iml" filepath="$PROJECT_DIR$/src/main/main.iml" />
     </modules>
   </component>
 </project>
