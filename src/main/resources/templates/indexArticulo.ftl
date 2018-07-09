@@ -1,133 +1,169 @@
+<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>BLOG DEL CLAN UCHICHA!</title>
+    <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+    <link href="css/style.css" rel='stylesheet' type='text/css' />
 
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!----webfonts---->
+    <link href='http://fonts.googleapis.com/css?family=Oswald:100,400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,300italic' rel='stylesheet' type='text/css'>
+    <!----//webfonts---->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!--end slider -->
+    <!--script-->
+    <script type="text/javascript" src="js/move-top.js"></script>
+    <script type="text/javascript" src="js/easing.js"></script>
+    <!--/script-->
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event){
+                event.preventDefault();
+                $('html,body').animate({scrollTop:$(this.hash).offset().top},900);
+            });
+        });
+    </script>
+    <!---->
+
+</head>
+<body>
+<!---header---->
+<div class="header">
+    <div class="container">
+        <div class="logo">
+            <a href="/"><img src="images/logo.jpg" title="" /></a>
+        </div>
+        <!---start-top-nav---->
+        <div class="top-menu">
+            <div class="search">
+                <form>
+                    <input type="text" placeholder="" required="">
+                    <input type="submit" value=""/>
+                </form>
+            </div>
+            <span class="menu"> </span>
+            <ul>
+                <li class="active"><a href="/">HOME</a></li>
+						 <#if admin || autor>
+ 						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
+                         </#if>
+						 <#if admin>
+ 						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
+                         </#if>
+						 <#if admin || autor>
+ 						<li><a href="/logout">LOG OUT</a></li>
+                         <#else>
+						 <li><a href="/login">																										LOG IN</a></li>
+                         </#if>
+                <div class="clearfix"> </div>
+            </ul>
+        </div>
+        <div class="clearfix"></div>
+        <script>
+            $("span.menu").click(function(){
+                $(".top-menu ul").slideToggle("slow" , function(){
+                });
+            });
+        </script>
+        <!---//End-top-nav---->
+    </div>
+</div>
+<!--/header-->
+<div class="single">
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel-group">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">
-                            ${articulo.titulo}
-                        </h1>
-                        </br>
+<div class="col-md-8 single-main">
+    <div class="single-grid">
+        <h1 class="panel-title">${articulo.titulo}</h1>
+        </br>
                         <#if usuario.administrator || usuario.autor>
                             <a href="editar/${articulo.id}" class="text-success ml-2">
                                 <button type="button" class="btn btn-warning">Editar</button>
                             </a>
+
                             <a href="eliminar/${articulo.id}" class="text-primary ml-2">
                                 <button type="button" class="btn btn-danger">Eliminar</button>
                                 </br>
                             </a>
 
                         </#if>
-                    </div>
-                    <div class="col-12 mt-2 bg-white px-4 rounded-0 login">
-                        <div class="row">
-                            <div class="col-sm-6 col-sm-offset-3">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">Articulo</div>
-                                    <div class="panel-body">${articulo.cuerpo}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="col-12 pt-3">
-                            <strong>Etiquetas</strong>
-
-                        </h6>
-                        <#if articulo.listaEtiqueta?size gt 0>
-                          <span class="label label-default" style="color:lawngreen">
-                                <#list articulo.listaEtiqueta as etiqueta>
-                                    ${etiqueta.etiqueta}
-                                </#list>
-                          </span>
-                        </#if>
-
-                        <div>
-                            <span class="label label-default" style="color:cornflowerblue";>
-                                Likes: ${likes}
-                            </span>
-
-                        </div>
-
-                        <div>
-                            <div>
-                                <span class="label label-default" style="color:crimson">
-                                Dislikes: ${dislikes}
-                        </span>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                    </div>
-                    <#if usuario.password != "no" && usuario.username != "no">
-                        <div>
-                            <form action="/articulo/${articulo.id}/like">
-                                <button style="display: inline;" class="btn btn-primary"type="submit" >
+        <img src="images/bar1.jpg" alt=""/>
+        <p>${articulo.cuerpo}</p>
+					<#if articulo.listaEtiqueta?size gt 0>
+                        <#list articulo.listaEtiqueta as etiqueta>
+								 <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
+                        </#list>
+                    </#if>
+        <div>
+            </br>
+					<#if usuario.password != "no" && usuario.username != "no">
+					<h5>
+                        <form action="/articulo/${articulo.id}/like">
+                            <form action="/articulo/${articulo.id}/dislike">
+                                <button style="display: inline;" class="label label-primary" type="submit" >
                                     Like
                                 </button>
-                            </form>
-                            <form action="/articulo/${articulo.id}/dislike">
-                                <button style="display: inline;" class="btn btn-primary"type="submit">
+
+                                <button style="display: inline;" class="label label-danger" type="submit">
                                     Dislike
                                 </button>
-                        </div>
                             </form>
-
-                    </#if>
-
-                     <#if usuario.password != "no" && usuario.username != "no">
-                    <div class="card-body">
-                        <form class="col-11 py-5" method="post" action="/articulo/${articulo.id}/comentar">
-                            <div class="panel px-2 py-3 bg-white">
-                                <textarea name="comentario" class="form-control rounded-0"></textarea>
-                            </div>
-
-                            <div class="text-center">
-
-                                    <button class="btn btn-primary"type="submit">
-                                        Comentar
-                                    </button>
-
-
-                            </div>
                         </form>
-                    </div>
-                     </#if>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        Comentarios
-                    </div>
-                    <div class="card-body">
-                        <#list articulo.listaComentarios as comentario>
-                            <div class="card col-12 mb-1 p-0">
-                                <div class="card-body">
-                                    <h5 class="card-title m-0">
-                                        <strong>
-                                            <i class="fas fa-user"></i> ${comentario.autor.username}
-                                        </strong>
-                                    </h5>
-                                </div>
-                                <div class="card-footer p-2">
-                                    <strong class="text-primary m-0">
-                                        <i class="far fa-comment"></i> ${comentario.comentario}
-                                    </strong>
-                                </div>
-                            </div>
-                        </#list>
-                    </div>
-                </div>
-            </div>
+                    </h5>
+                    </#if>
         </div>
+
+    </div>
+
+				 <#list articulo.listaComentarios as comentario>
+			 <ul class="comment-list">
+                 <h5 class="post-author_head">Written by <a href="#" title="Posts by admin" rel="author">${comentario.autor.username}</a></h5>
+                 <li><img src="images/avatar.png" class="img-responsive" alt="">
+                     <div class="desc">
+                         <p> Comentarios: ${comentario.autor.username}</p>
+                     </div>
+                     <div class="clearfix"></div>
+                 </li>
+             </ul>
+                 </#list>
+
+				  <div class="content-form">
+                     <#if usuario.password != "no" && usuario.username != "no">
+                         <h3>Leave a comment</h3>
+                         <form method="post" action="/articulo/${articulo.id}/comentar">
+                             <textarea placeholder="Message"></textarea>
+                             <input type="submit" value="SEND"/>
+                         </form>
+						 </div>
+                     </#if>
+		  </div>
+
+			  <div class="col-md-4 side-content">
+                  <div class="recent">
+                      <h3>RECENT POSTS</h3>
+					 <#list LosArticulos as articulo>
+					 <ul>
+                         <li><a href="/articulo/${articulo.id}">${articulo.titulo}</a></li>
+
+                     </ul>
+                     </#list>
+                  </div>
+                  <div class="clearfix"></div>
+
+              </div>
+			  <div class="clearfix"></div>
+		  </div>
+	  </div>
+</div>
+<!---->
+<div class="footer">
+    <div class="container">
+        <p>Copyrights © 2015 Blog All rights reserved | Template by <a href="http://w3layouts.com/">W3layouts</a></p>
     </div>
 </div>
-

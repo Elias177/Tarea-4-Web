@@ -44,7 +44,7 @@ public class ArticuloORM {
 
     public List<Articulo> listarArticulos(int pagina){
 
-        Query query = em.createQuery("select a from Articulo a order by fecha desc")
+        Query query = em.createQuery("select a from Articulo a order by a.fecha desc")
                 .setFirstResult(5*(pagina-1))
                 .setMaxResults(5);
 
@@ -59,18 +59,18 @@ public class ArticuloORM {
 
 
 
-    public Long countLikes(Long idArticulo){
-        Long count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = true")
+    public int countLikes(Long idArticulo){
+        int count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = true")
                 .setParameter(1, idArticulo)
-                .getSingleResult()).longValue();
+                .getSingleResult()).intValue();
 
         return count;
     }
 
-    public Long countDislikes(Long idArticulo){
-        Long count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = false")
+    public int countDislikes(Long idArticulo){
+        int count = ((Number) em.createNativeQuery("select count(a.id) from Reaccion a WHERE a.ARTICULO_ID = ?1 AND a.reaccion = false")
                 .setParameter(1, idArticulo)
-                .getSingleResult()).longValue();
+                .getSingleResult()).intValue();
 
         return count;
     }
