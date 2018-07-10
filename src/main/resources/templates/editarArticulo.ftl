@@ -14,9 +14,11 @@
 
                                 <label for="titulo"><strong>Titulo</strong> </label>
                                 <input type="text" class="form-control rounded-0" name="titulo" value="${articulo.titulo}"/>
+                                </br>
 
                                 <label for="cuerpo"><strong>Cuerpo</strong></label><br>
                                 <textarea name="cuerpo" class="form-control rounded-0">${articulo.cuerpo}</textarea>
+                                </br>
 
                                 <label for ="etiquetas"><strong>Etiquetas</strong></label><br>
                                 <#if articulo.listaEtiqueta?size gt 0>
@@ -27,7 +29,8 @@
                                  </textarea>
                             </#if>
                             </div>
-                            <button class="btn btn-light" type="submit">
+                            </br>
+                            <button class="btn btn-warning" type="submit">
                                 EDITAR
                             </button>
                         </form>

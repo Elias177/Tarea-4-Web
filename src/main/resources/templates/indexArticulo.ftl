@@ -1,9 +1,4 @@
-<!--
-Author: W3layouts
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -82,11 +77,11 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 </div>
 <!--/header-->
 <div class="single">
-<div class="container">
-<div class="col-md-8 single-main">
-    <div class="single-grid">
-        <h1 class="panel-title">${articulo.titulo}</h1>
-        </br>
+    <div class="container">
+        <div class="col-md-8 single-main">
+            <div class="single-grid">
+                <h1 class="panel-title">${articulo.titulo}</h1>
+                </br>
                     <#if usuario??>
                         <#if usuario.administrator || usuario.autor>
                             <a href="editar/${articulo.id}" class="text-success ml-2">
@@ -100,45 +95,36 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
                         </#if>
                     </#if>
-
-        <img src="images/bar1.jpg" alt=""/>
-        <p>${articulo.cuerpo}</p>
+                </br>
+                <img src="images/bar1.jpg" alt=""/>
+                <p>${articulo.cuerpo}</p>
 					<#if articulo.listaEtiqueta?size gt 0>
                         <#list articulo.listaEtiqueta as etiqueta>
 								 <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
                         </#list>
                     </#if>
-        <div>
-            </br>
-            <div>
-                 <span class="label label-default" style="color:cornflowerblue";>
-                        Likes: ${likes}
-                 </span>
-            </div>
-            <div>
                 <div>
-                    <span class="label label-default" style="color:crimson">
-                        Dislikes: ${dislikes}
-                    </span>
-                </div>
+                    </br>
+
 					<#if usuario??>
-					<h5>
-                        <form action="/articulo/${articulo.id}/like">
+						<h5>
+                            <form class="form pull-right" action="/articulo/${articulo.id}/like">
+                                    <button style="display: inline;" class="label label-primary" type="submit" >
+                                        ${likes}	Like
+                                    </button>
+                                </form>
 
-                                <button style="display: inline;" class="label label-primary" type="submit" >
-                                    Like
-                                </button>
-                        </form>
-                        <form action="/articulo/${articulo.id}/dislike">
-                            <button style="display: inline;" class="label label-danger" type="submit">
-                                Dislike
-                            </button>
-                        </form>
-                    </h5>
+                            <form class="form pull-right" action="/articulo/${articulo.id}/dislike">
+                                    <button style="display: inline;" class="label label-danger" type="submit">
+                                        ${dislikes}	Dislike
+                                    </button>
+                            </form>
+                        </h5>
                     </#if>
-        </div>
+                </div>
 
-    </div>
+            </div>
+            </br>
 
 				 <#list articulo.listaComentarios as comentario>
 			 <ul class="comment-list">
@@ -152,7 +138,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
              </ul>
                  </#list>
 
-				  <div class="content-form">
+        <div class="content-form">
                      <#if usuario??>
                          <h3>Leave a comment</h3>
                          <form method="post" action="/articulo/${articulo.id}/comentar">
@@ -161,24 +147,23 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          </form>
 						 </div>
                      </#if>
-		  </div>
+        </div>
 
-			  <div class="col-md-4 side-content">
-                  <div class="recent">
-                      <h3>RECENT POSTS</h3>
+        <div class="col-md-4 side-content">
+            <div class="recent">
+                <h3>RECENT POSTS</h3>
 					 <#list LosArticulos as articulo>
 					 <ul>
                          <li><a href="/articulo/${articulo.id}">${articulo.titulo}</a></li>
-
                      </ul>
                      </#list>
-                  </div>
-                  <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
 
-              </div>
-			  <div class="clearfix"></div>
-		  </div>
-	  </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
 </div>
 <!---->
 <div class="footer">
