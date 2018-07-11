@@ -1,6 +1,6 @@
 
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>BLOG DEL CLAN UCHICHA!</title>
     <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
@@ -90,8 +90,8 @@
                              <#if articulo.cuerpo?length &lt; 71>
                                  <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                  <p>${articulo.cuerpo}</p>
-                                 <a href="/articulo/${articulo.id}"><span></span>READ MORE</a><p>          </p>
-
+                                 <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
+                                <br>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
                                         <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
@@ -103,8 +103,8 @@
                              <#else>
                                 <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                 <p>${articulo.cuerpo?substring(0,70)}...</p>
-                                <a href="/articulo/${articulo.id}"><span></span>READ MORE</a><p>          </p>
-
+                                <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
+                                </br>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
                                         <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>

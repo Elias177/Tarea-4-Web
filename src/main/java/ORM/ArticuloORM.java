@@ -44,7 +44,7 @@ public class ArticuloORM {
 
     public List<Articulo> listarArticulos(int pagina){
 
-        Query query = em.createQuery("select a from Articulo a order by a.fecha desc")
+        Query query = em.createQuery("select a from Articulo a order by a.id desc")
                 .setFirstResult(5*(pagina-1))
                 .setMaxResults(5);
 

@@ -18,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         staticFiles.location("/templates");
-        org.h2.tools.Server.createTcpServer().start();
+       // org.h2.tools.Server.createTcpServer().start();
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setClassForTemplateLoading(Main.class, "/");
         ORM.UsuarioORM usuarioORM = new UsuarioORM();
@@ -71,7 +71,7 @@ public class Main {
                 textEncryptor.setPasswordCharArray("mangekyouSharingan42".toCharArray());
                 req.session(true);
                 req.session().attribute("usuario", usuarioORM.getUsuarioUsername(textEncryptor.decrypt(req.cookie("username"))));
-                res.redirect("/");
+                //res.redirect("/");
             }
 
             res.redirect("/inicio?pagina=1");
