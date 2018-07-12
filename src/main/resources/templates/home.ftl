@@ -82,8 +82,8 @@
     <div class="container">
         <div class="content-grids">
         <div class="col-md-8 content-main">
+            <#list LosArticulos as articulo>
         <div class="content-grid">
-				<#list LosArticulos as articulo>
                 <div class="content-grid-info">
                     <img src="images/bar1.jpg" alt=""/>
                 <div class="post-info">

@@ -24,7 +24,7 @@
                                     <form class="col-11 py-5" method="post" action="/agregarArticulo">
                                         <div class="panel px-2 py-3 bg-white">
                                             <label for="titulo"><strong>Titulo</strong> </label>
-                                            <input type="text" class="form-control rounded-0" name="titulo" placeholder="Titulo..." required autofocus/>
+                                            <input type="text" class="form-control rounded-0" name="titulo" required autofocus/>
                                             <br>
 
                                             <div class="form-group">
@@ -34,7 +34,7 @@
 
                                                 <div class="form-group">
                                                     <label for="etiquetas"><strong>Etiquetas</strong></label>
-                                                    <input name="etiquetas" class="form-control rounded-0"></input>
+                                                    <input name="etiquetas" class="form-control rounded-0">
                                                 </div>
                                             </div>
                                         </div>
