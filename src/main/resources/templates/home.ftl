@@ -91,7 +91,7 @@
                                  <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                  <p>${articulo.cuerpo}</p>
                                  <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
-                                <br>
+                                <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
                                         <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
@@ -104,7 +104,7 @@
                                 <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                 <p>${articulo.cuerpo?substring(0,70)}...</p>
                                 <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
-                                </br>
+                                <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
                                         <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
