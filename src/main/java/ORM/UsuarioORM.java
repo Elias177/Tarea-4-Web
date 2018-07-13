@@ -3,6 +3,7 @@ package ORM;
 import clases.Usuario;
 
 import javax.persistence.*;
+import java.util.List;
 
 public class UsuarioORM {
 
@@ -57,6 +58,27 @@ public class UsuarioORM {
         } catch(NoResultException e){
             return null;
         }
+
+    }
+
+    public Usuario getUsuarioId(Long id){
+
+        try{
+            Query query = em.createQuery("select u from Usuario u where u.id = :id")
+                    .setParameter("id", id);
+            return (Usuario)query.getSingleResult();
+        } catch(NoResultException e){
+            return null;
+        }
+
+    }
+
+    public List<Usuario> getUsuarioList(){
+
+            List<Usuario> l = em.createQuery("select u from Usuario u")
+            .getResultList();
+            return l;
+
 
     }
 

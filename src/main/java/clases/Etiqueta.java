@@ -1,8 +1,6 @@
 package clases;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Etiqueta {
@@ -19,9 +17,12 @@ public class Etiqueta {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "et_generator")
+    @SequenceGenerator(name="et_generator", sequenceName = "et_seq", allocationSize=1)
     private Long id_etiqueta;
     private String etiqueta;
+
+
 
     public boolean isActivo() {
         return activo;

@@ -2,10 +2,7 @@ package ORM;
 
 import clases.Etiqueta;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.List;
 
 public class EtiquetaORM {
@@ -14,9 +11,17 @@ public class EtiquetaORM {
     EntityManager em = emf.createEntityManager();
 
     public void guardarEtiqueta(Etiqueta etiqueta) {
-        em.getTransaction().begin();
-        em.persist(etiqueta);
-        em.getTransaction().commit();
+        List<Etiqueta> e = checkEtiqueta();
+        for(int i = 0; i < e.size(); i++){
+            if(!e.get(i).getEtiqueta().equalsIgnoreCase(etiqueta.getEtiqueta())){
+                em.getTransaction().begin();
+                em.persist(etiqueta);
+                em.getTransaction().commit();
+            }else{
+                editarEtiqueta(etiqueta,etiqueta.getEtiqueta());
+            }
+
+        }
 
     }
 
@@ -41,8 +46,9 @@ public class EtiquetaORM {
         
     }
 
+
+
     public List<Etiqueta> getEtiquetas(Long idArticulo){
-        String sql = "";
         List<Etiqueta> etiquetas = em.createQuery(
                 "select e.listaEtiqueta from Articulo e where e.id = ?1")
                 .setParameter(1,idArticulo)
@@ -50,10 +56,24 @@ public class EtiquetaORM {
 
         return etiquetas;
     }
+
     public Etiqueta getEtiquetaNombre(String etiqueta){
+        try{
         Query query = em.createQuery("select e from Etiqueta e where e.etiqueta = ?1")
                 .setParameter(1, etiqueta);
         return (Etiqueta) query.getSingleResult();
+    } catch (NoResultException e) {
+        return null;
+    }
     }
 
+    public List<Etiqueta> checkEtiqueta() {
+        try {
+            List<Etiqueta> query = em.createQuery("select e from Etiqueta e")
+                    .getResultList();
+            return query;
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

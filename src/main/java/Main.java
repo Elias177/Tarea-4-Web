@@ -41,6 +41,12 @@ public class Main {
                 response.redirect("/");
             }
         });
+        before("/usuario/gestionUsuario", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
 
         before("/agregarUsuario", (request, response) -> {
             Usuario usuario = request.session(true).attribute("usuario");
@@ -165,8 +171,7 @@ public class Main {
 
             atr.put("anterior", (pagina - 1));
             atr.put("siguiente", (pagina + 1));
-            atr.put("admin",usuario.isAdministrator());
-            atr.put("autor",usuario.isAutor());
+            atr.put("usuario",usuario);
             atr.put("LosArticulos",filtrados);
             atr.put("etiquetaFiltro",req.params("etiqueta"));
             template.process(atr,writer);
@@ -278,13 +283,18 @@ public class Main {
 
             ArrayList<Etiqueta> et =  new ArrayList<>();
             for(int i = 0; i < listaEtiquetas.size(); i++){
-                Etiqueta e = new Etiqueta(listaEtiquetas.get(i));
-                et.add(e);
-                etiquetaORM.guardarEtiqueta(e);
+
+                if(etiquetaORM.getEtiquetaNombre(listaEtiquetas.get(i)) != null){
+                    et.add(etiquetaORM.getEtiquetaNombre(listaEtiquetas.get(i)));
+                }else{
+                    Etiqueta e = new Etiqueta(listaEtiquetas.get(i));
+                    etiquetaORM.guardarEtiqueta(e);
+                    et.add(e);
+                }
             }
 
             Date d = new Date(System.currentTimeMillis());
-
+            System.out.println(et);
             Articulo a =  new Articulo(titulo,cuerpo,usuario,d,null,et);
             a.setLikes(0);
             a.setDislikes(0);
@@ -296,120 +306,120 @@ public class Main {
             return null;
         });
 
+        get("articulo/:id", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atributos = new HashMap<>();
+            Usuario usuario = req.session(true).attribute("usuario");
+            Template template = configuration.getTemplate("templates/indexArticulo.ftl");
+            Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
+            int likes = articuloORM.countLikes(articulo.getId());
+            int dislikes = articuloORM.countDislikes(articulo.getId());
+            articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
+            articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
+
+            List<Articulo> articuloList = articuloORM.listarArticulos(1);
+
+            for(int i = 0; i < articuloList.size(); i++){
+                articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
+                articuloList.get(i).setLikes(articuloORM.countLikes(articuloList.get(i).getId()));
+                articuloList.get(i).setDislikes(articuloORM.countDislikes(articuloList.get(i).getId()));
+            }
+            atributos.put("articulo", articulo);
+            atributos.put("usuario",usuario);
+            atributos.put("likes",likes);
+            atributos.put("dislikes",dislikes);
+            atributos.put("LosArticulos",articuloList);
+            template.process(atributos, writer);
+
+            return writer;
+        });
 
 
 
-        path("/articulo", () -> {
+        post("/:id/comentar", (req, res) -> {
+            Usuario usuario = req.session(true).attribute("usuario");
+            Long idArticulo = Long.parseLong(req.params("id"));
+            String comentario = req.queryParams("comentario");
+            Comentario c = new Comentario(comentario,usuario,articuloORM.getArticulo(idArticulo));
+            comentarioORM.guardarComentario(c);
+            res.redirect("/articulo/" + idArticulo);
+            return null;
+        });
 
-            get("/:id", (req, res) -> {
-                StringWriter writer = new StringWriter();
-                Map<String, Object> atributos = new HashMap<>();
-                Usuario usuario = req.session(true).attribute("usuario");
-                Template template = configuration.getTemplate("templates/indexArticulo.ftl");
-                Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
-                int likes = articuloORM.countLikes(articulo.getId());
-                int dislikes = articuloORM.countDislikes(articulo.getId());
-                articulo.setListaEtiqueta(etiquetaORM.getEtiquetas(articulo.getId()));
-                articulo.setListaComentarios(comentarioORM.getComentario(articulo.getId()));
-
-                List<Articulo> articuloList = articuloORM.listarArticulos(1);
-
-                for(int i = 0; i < articuloList.size(); i++){
-                    articuloList.get(i).setListaEtiqueta(etiquetaORM.getEtiquetas(articuloList.get(i).getId()));
-                    articuloList.get(i).setLikes(articuloORM.countLikes(articuloList.get(i).getId()));
-                    articuloList.get(i).setDislikes(articuloORM.countDislikes(articuloList.get(i).getId()));
-                }
-                atributos.put("articulo", articulo);
-                atributos.put("usuario",usuario);
-                atributos.put("likes",likes);
-                atributos.put("dislikes",dislikes);
-                atributos.put("LosArticulos",articuloList);
-                template.process(atributos, writer);
-
-                return writer;
-            });
-
-
-
-            post("/:id/comentar", (req, res) -> {
-                Usuario usuario = req.session(true).attribute("usuario");
-                Long idArticulo = Long.parseLong(req.params("id"));
-                String comentario = req.queryParams("comentario");
-                Comentario c = new Comentario(comentario,usuario,articuloORM.getArticulo(idArticulo));
-                comentarioORM.guardarComentario(c);
+        get("/:id/like", (req, res) -> {
+            Usuario usuario = req.session(true).attribute("usuario");
+            Long idArticulo = Long.parseLong(req.params("id"));
+            Articulo articulo = articuloORM.getArticulo(idArticulo);
+            Reaccion re = reaccionORM.checkLike(usuario,articulo);
+            if(re == null){
+                reaccionORM.guardarLike(new Reaccion(articulo,usuario,true));
                 res.redirect("/articulo/" + idArticulo);
-                return null;
-            });
+            }else{
+                reaccionORM.deleteLike(re);
 
-            get("/:id/like", (req, res) -> {
-                    Usuario usuario = req.session(true).attribute("usuario");
-                    Long idArticulo = Long.parseLong(req.params("id"));
-                    Articulo articulo = articuloORM.getArticulo(idArticulo);
-                    Reaccion re = reaccionORM.checkLike(usuario,articulo);
-                    if(re == null){
-                        reaccionORM.guardarLike(new Reaccion(articulo,usuario,true));
-                        res.redirect("/articulo/" + idArticulo);
-                    }else{
-                        reaccionORM.deleteLike(re);
+                if(!re.isReaccion())
+                    reaccionORM.updateLike(re,true);
 
-                        if(!re.isReaccion())
-                        reaccionORM.updateLike(re,true);
-
-                        res.redirect("/articulo/" + idArticulo);
-                    }
+                res.redirect("/articulo/" + idArticulo);
+            }
 
 
 
 
-                return null;
-            });
+            return null;
+        });
 
-            get("/:id/dislike", (req, res) -> {
-                Usuario usuario = req.session(true).attribute("usuario");
-                Long idArticulo = Long.parseLong(req.params("id"));
-                Articulo articulo = articuloORM.getArticulo(idArticulo);
-                Reaccion re = reaccionORM.checkLike(usuario,articulo);
-                if(re == null){
-                    reaccionORM.guardarLike(new Reaccion(articulo,usuario,false));
-                    res.redirect("/articulo/" + idArticulo);
-                }else{
-                    reaccionORM.deleteLike(re);
+        get("/:id/dislike", (req, res) -> {
+            Usuario usuario = req.session(true).attribute("usuario");
+            Long idArticulo = Long.parseLong(req.params("id"));
+            Articulo articulo = articuloORM.getArticulo(idArticulo);
+            Reaccion re = reaccionORM.checkLike(usuario,articulo);
+            if(re == null){
+                reaccionORM.guardarLike(new Reaccion(articulo,usuario,false));
+                res.redirect("/articulo/" + idArticulo);
+            }else{
+                reaccionORM.deleteLike(re);
 
-                    if(re.isReaccion())
+                if(re.isReaccion())
                     reaccionORM.updateLike(re,false);
 
-                    res.redirect("/articulo/" + idArticulo);
-                }
+                res.redirect("/articulo/" + idArticulo);
+            }
 
-                return null;
-            });
+            return null;
+        });
 
-            get("/eliminar/:id", (req, res) -> {
-                    StringWriter writer = new StringWriter();
-                    Map<String, Object> atributos = new HashMap<>();
-                    Template template = configuration.getTemplate("templates/eliminarArticulo.ftl");
+        get("/eliminar/:id", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atributos = new HashMap<>();
+            Template template = configuration.getTemplate("templates/eliminarArticulo.ftl");
 
-                    Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
-                    atributos.put("articulo", articulo);
-                    template.process(atributos, writer);
+            Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
+            atributos.put("articulo", articulo);
+            template.process(atributos, writer);
 
-                    return writer;
-            });
+            return writer;
+        });
 
 
-            get("/editar/:id", (req, res) -> {
-                StringWriter writer = new StringWriter();
-                Map<String, Object> atributos = new HashMap<>();
-                Template template = configuration.getTemplate("templates/editarArticulo.ftl");
+        get("/editar/:id", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atributos = new HashMap<>();
+            Template template = configuration.getTemplate("templates/editarArticulo.ftl");
 
-                Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
+            Articulo articulo = articuloORM.getArticulo(Long.parseLong(req.params("id")));
+            String listEtiquetas = "";
+            for(int i = 0; i < articulo.getListaEtiqueta().size(); i++){
+                listEtiquetas += articulo.getListaEtiqueta().get(i).getEtiqueta() + ",";
 
-                atributos.put("articulo", articulo);
-                template.process(atributos, writer);
+            }
+            listEtiquetas = listEtiquetas.replaceAll("\\s+","");
+            System.out.println(listEtiquetas);
+            atributos.put("articulo", articulo);
+            atributos.put("listaEtiquetas",listEtiquetas);
+            template.process(atributos, writer);
 
-                return writer;
-            });
-
+            return writer;
         });
 
         post("/eliminar/:id", (req, res) -> {
@@ -425,28 +435,62 @@ public class Main {
             String cuerpo = req.queryParams("cuerpo");
             String etiquetas = req.queryParams("etiquetas");
             List<String> listaEtiquetas = Arrays.asList(etiquetas.split(","));
-
+            ArrayList<Etiqueta> etiquetaArrayList = new ArrayList<>();
+            System.out.println(listaEtiquetas);
             Articulo art = articuloORM.getArticulo(id);
-            for(int i = 0; i < art.getListaEtiqueta().size(); i++){
-                etiquetaORM.editarEtiqueta(art.getListaEtiqueta().get(i),listaEtiquetas.get(i));
-            }
+            List<Etiqueta> etiquetaList = etiquetaORM.getEtiquetas(id);
 
-            articuloORM.editarArticulo(art,titulo,cuerpo);
+            for(int j = 0; j<listaEtiquetas.size(); j++){
+                Etiqueta e = new Etiqueta(listaEtiquetas.get(j));
+                etiquetaArrayList.add(e);
+            }
+            art.setListaEtiqueta(etiquetaArrayList);
+            art.setListaComentarios(null);
+            art.setLikes(0);
+            art.setDislikes(0);
+            articuloORM.editarArticulo(art,titulo,cuerpo,etiquetaArrayList);
 
             res.redirect("/");
 
             return null;
         });
 
-        path("/usuario", () -> {
-            get("/crearUsuario", (req, res) -> {
-                StringWriter writer = new StringWriter();
-                Template temp = configuration.getTemplate("templates/crearUsuario.ftl");
 
-                temp.process(null, writer);
+            get("/gestionUsuario", (req, res) -> {
+                Usuario usuario = req.session(true).attribute("usuario");
+                StringWriter writer = new StringWriter();
+                Map<String, Object> atributos = new HashMap<>();
+                Template temp = configuration.getTemplate("templates/gestionUsuarios.ftl");
+
+                atributos.put("usuarioList",usuarioORM.getUsuarioList());
+                atributos.put("usuario",usuario);
+                temp.process(atributos, writer);
 
                 return writer;
             });
+        get("/crearUsuario", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Template temp = configuration.getTemplate("templates/crearUsuario.ftl");
+
+            temp.process(null, writer);
+
+            return writer;
+        });
+        get("/usuario/eliminar/:id", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atributos = new HashMap<>();
+            Template template = configuration.getTemplate("templates/eliminarUsuario.ftl");
+
+            Usuario usuario = usuarioORM.getUsuarioId(Long.parseLong(req.params("id")));
+            atributos.put("usuario", usuario);
+            template.process(atributos, writer);
+
+            return writer;
+        });
+        post("/usuarioEliminar/:id", (req, res) -> {
+            usuarioORM.borrarUsuario(Long.valueOf(req.params("id")));
+            res.redirect("/gestionUsuario");
+            return null;
         });
 
 

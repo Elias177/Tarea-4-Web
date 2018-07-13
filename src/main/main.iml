@@ -26,5 +26,7 @@
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-io:9.4.8.v20171121" level="project" />
     <orderEntry type="library" name="Gradle: com.h2database:h2:1.4.194" level="project" />
+    <orderEntry type="library" name="Gradle: org.hibernate:hibernate-core:5.1.0.Final" level="project" />
+    <orderEntry type="library" name="Gradle: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" level="project" />
   </component>
 </module>

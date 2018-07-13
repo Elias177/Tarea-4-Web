@@ -54,7 +54,8 @@
 
               <#if usuario??>
                   <#if usuario.administrator>
-  						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
+  						<li><a href="/crearUsuario">NUEVO USUARIO</a></li>
+                        <li><a href="/gestionUsuario">GESTIONAR USUARIOS</a></li>
                   </#if>
               </#if>
 
@@ -88,9 +89,9 @@
                     <img src="images/bar1.jpg" alt=""/>
                 <div class="post-info">
                              <#if articulo.cuerpo?length &lt; 71>
-                                 <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                 <h4><a href="articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                  <p>${articulo.cuerpo}</p>
-                                 <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
+                                 <a href="/${articulo.id}"><span></span>READ MORE</a>
                                 <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
@@ -101,9 +102,9 @@
 
 
                              <#else>
-                                <h4><a href="/articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                <h4><a href="articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                 <p>${articulo.cuerpo?substring(0,70)}...</p>
-                                <a href="/articulo/${articulo.id}"><span></span>READ MORE</a>
+                                <a href="/${articulo.id}"><span></span>READ MORE</a>
                                 <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
@@ -126,7 +127,7 @@
                     <h3>RECENT POSTS</h3>
                             <#list LosArticulos as articulo>
                             <ul>
-                                <li><a href="/articulo/${articulo.id}">${articulo.titulo}</a></li>
+                                <li><a href="/${articulo.id}">${articulo.titulo}</a></li>
 
                             </ul>
                             </#list>

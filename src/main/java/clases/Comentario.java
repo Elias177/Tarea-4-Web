@@ -6,7 +6,8 @@ import javax.persistence.*;
 public class Comentario {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "com_generator")
+    @SequenceGenerator(name="com_generator", sequenceName = "com_seq", allocationSize=1)
     private long id_comentario;
 
     @Column(name = "comentario", columnDefinition = "TEXT")

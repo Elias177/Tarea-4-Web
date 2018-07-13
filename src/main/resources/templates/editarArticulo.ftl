@@ -35,11 +35,8 @@
                                                 <div class="form-group">
                                                     <label for="etiquetas"><strong>Etiquetas</strong></label>
                                                      <#if articulo.listaEtiqueta?size gt 0>
-                                                        <textarea name="etiquetas" class="form-control">
-                                                            <#list articulo.listaEtiqueta as etiqueta>
-                                                                ${etiqueta.etiqueta},
-                                                            </#list>
-                                                            </textarea>
+                                                        <input name="etiquetas" class="form-control" value="${listaEtiquetas}">
+
                                                      </#if>
                                                 </div>
                                             </div>

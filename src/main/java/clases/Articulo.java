@@ -1,6 +1,5 @@
 package clases;
 
-import com.sun.istack.internal.Nullable;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -22,7 +21,8 @@ public class Articulo {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "art_generator")
+    @SequenceGenerator(name="art_generator", sequenceName = "art_seq", allocationSize=1)
     private Long id;
     private String titulo;
     @Column(name = "cuerpo",columnDefinition = "TEXT")
@@ -35,14 +35,14 @@ public class Articulo {
     @OneToMany(mappedBy = "articulo",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Comentario> listaComentarios;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "ARTICULO_ETIQUETA", joinColumns = { @JoinColumn(name = "ARTICULO_ID") }, inverseJoinColumns = { @JoinColumn(name = "LISTAETIQUETA_ID_ETIQUETA") })
     private List<Etiqueta> listaEtiqueta;
 
-    @Nullable
+    @Column(nullable = true)
     private int likes;
 
-    @Nullable
+    @Column(nullable = true)
     private int dislikes;
 
     public boolean isActivo() {

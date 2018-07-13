@@ -1,8 +1,6 @@
 package clases;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Usuario {
@@ -19,7 +17,8 @@ public class Usuario {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usu_generator")
+    @SequenceGenerator(name="usu_generator", sequenceName = "usu_seq", allocationSize=1)
     private Long id;
     private String username;
     private String nombre;

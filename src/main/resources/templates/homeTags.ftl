@@ -1,132 +1,158 @@
-
-<!doctype html>
-<html lang="es">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
+    <title>BLOG DEL CLAN UCHICHA!</title>
+    <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+    <link href="css/style.css" rel='stylesheet' type='text/css' />
 
-    <title>Blog de Web</title>
-    <link rel="stylesheet" href="/public/styles/style.css">
-
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!----webfonts---->
+    <link href='http://fonts.googleapis.com/css?family=Oswald:100,400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,300italic' rel='stylesheet' type='text/css'>
+    <!----//webfonts---->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!--end slider -->
+    <!--script-->
+    <script type="text/javascript" src="js/move-top.js"></script>
+    <script type="text/javascript" src="js/easing.js"></script>
+    <!--/script-->
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event){
+                event.preventDefault();
+                $('html,body').animate({scrollTop:$(this.hash).offset().top},900);
+            });
+        });
+    </script>
+    <!---->
 
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-dark" id = "custom-nav">
-    <a href="/">Home</a>
-
-                                <ul class="nav navbar-nav">
-                                        <#if admin || autor>
-                                    <li class="nav-item">
-                                        <a class="btn btn-link text-light" href="/agregarArticulo">
-                                            Crear artículo
-                                        </a>
-                                    </li>
-                                        </#if>
-                                    <#if admin>
-                                        <li class="nav-item">
-                                            <a class="btn btn-link text-light" href="usuario/crearUsuario">
-                                                Nuevo usuario
-                                            </a>
-                                        </li>
-                                    </#if>
-
-                                </ul>
-
-                                <#if admin || autor>
-                                    <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
-                                            <a href="/logout">
-                                                Log out
-                                            </a>
-                                        </li>
-                                    </ul>
-                                <#else>
-                                <ul class="navbar-nav ml-auto">
-                                    <a href="/login">
-                                        Log in
-                                    </a>
-                                </li>
-
-                                </ul>
-
-                                </#if>
-
-</nav>
-<h2>Articulos con la etiqueta: <strong>${etiquetaFiltro}</strong></h2>
-<div class="col-12 p-2">
-    <div class="row">
-        <#list LosArticulos as articulo>
-<div class="container">
-    <div class="left-panel">
-        <div class="col-xs-12 col-sm-6 col-lg-8">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <h3 class="card-title">${articulo.titulo}</h3>
-                            <div class="col-sm-3">
-                                <h4 class="pull-right">
-                                    <i class="fas fa-calendar-alt"></i> ${articulo.fecha}
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <#if articulo.cuerpo?length &lt; 71>
-                    <div class="panel-body">${articulo.cuerpo}
-                        <a href="/articulo/${articulo.id}">Leer más...</a>
-                    </div>
-                <#else>
-                    <div class="panel-body">${articulo.cuerpo?substring(0,70)}...
-                        <a href="/articulo/${articulo.id}">Leer más...</a>
-                    </div>
+<!---header---->
+<div class="header">
+    <div class="container">
+        <div class="logo">
+            <a href="/"><img src="images/logo.jpg" title="" /></a>
+        </div>
+        <!---start-top-nav---->
+        <div class="top-menu">
+            <div class="search">
+                <form>
+                    <input type="text" placeholder="" required="">
+                    <input type="submit" value=""/>
+                </form>
+            </div>
+            <span class="menu"> </span>
+            <ul>
+                <li class="active"><a href="/">HOME</a></li>
+                <#if usuario??>
+                    <#if usuario.administrator || usuario.autor>
+  						<li><a href="/agregarArticulo">CREAR ARTICULO</a></li>
+                    </#if>
                 </#if>
 
-                <div class="card-footer p-2">
-                    <strong class="text-danger m-0">
+              <#if usuario??>
+                  <#if usuario.administrator>
+  						<li><a href="usuario/crearUsuario">NUEVO USUARIO</a></li>
+                  </#if>
+              </#if>
 
-                            <#if articulo.listaEtiqueta?size gt 0>
-                                <span class="label label-default">
-                                    <#list articulo.listaEtiqueta as etiqueta>
-                                        ${etiqueta.etiqueta}
-                                    </#list>
-                                </span>
-                            </#if>
-                    </strong>
-                </div>
-            </div>
+ 						 <#if usuario??>
+  						<li><a href="/logout">LOG OUT</a></li>
+                         <#else>
+ 						 <li><a href="/login">																										LOG IN</a></li>
+                         </#if>
+                <div class="clearfix"> </div>
+            </ul>
         </div>
-        </#list>
+        <div class="clearfix"></div>
+        <script>
+            $("span.menu").click(function(){
+                $(".top-menu ul").slideToggle("slow" , function(){
+                });
+            });
+        </script>
+        <!---//End-top-nav---->
     </div>
+</div>
+
+<!--/header-->
+<div class="content">
+    <div class="container">
+    <h2>Articulos con la etiqueta: <strong>${etiquetaFiltro}</strong></h2>
+        <div class="content-grids">
+        <div class="col-md-8 content-main">
+            <#list LosArticulos as articulo>
+        <div class="content-grid">
+                <div class="content-grid-info">
+                    <img src="images/bar1.jpg" alt=""/>
+                <div class="post-info">
+                             <#if articulo.cuerpo?length &lt; 71>
+                                 <h4><a href="/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                 <p>${articulo.cuerpo}</p>
+                                 <a href="/${articulo.id}"><span></span>READ MORE</a>
+                                <p>   </p>
+                                 <#if articulo.listaEtiqueta?size gt 0>
+                                     <#list articulo.listaEtiqueta as etiqueta>
+                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
+                                     </#list>
+                                 </#if>
+                                 <h6><span class="label label-primary pull-right">Likes: ${articulo.likes}</span> <span class="label label-danger pull-right">Dislikes: ${articulo.dislikes}</span></h6>
+
+
+                             <#else>
+                                <h4><a href="/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
+                                <p>${articulo.cuerpo?substring(0,70)}...</p>
+                                <a href="/${articulo.id}"><span></span>READ MORE</a>
+                                <p>   </p>
+                                 <#if articulo.listaEtiqueta?size gt 0>
+                                     <#list articulo.listaEtiqueta as etiqueta>
+                                        <a href="homeTags/${etiqueta.etiqueta}?pagina=1" class="label label-success">${etiqueta.etiqueta}</a>
+                                     </#list>
+                                 </#if>
+                                <h6><span class="label label-primary pull-right">Likes: ${articulo.likes}</span> <span class="label label-danger pull-right">Dislikes: ${articulo.dislikes}</span></h6>
+                                </div>
+								</div>
+
+                             </#if>
+                         </div>
+					</div>
+
+                </#list>
+
+
+            <div class="col-md-4 content-right">
+                <div class="recent">
+                    <h3>RECENT POSTS</h3>
+                            <#list LosArticulos as articulo>
+                            <ul>
+                                <li><a href="/${articulo.id}">${articulo.titulo}</a></li>
+
+                            </ul>
+                            </#list>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
     </div>
+</div>
 
 
-
-</body>
-<footer>
+<!---->
+<div class="footer">
     <div class="container">
         <ul class="pagination">
             <#if valorAnterior == 1>
-					<li><a class="active" href="/homeTags/${etiquetaFiltro}?pagina=${anterior}">&lt;&lt; Anterior</a></li>
+					<li><a class="active" href="/inicio?pagina=${anterior}">&lt;&lt; Anterior</a></li>
 
             </#if>
 
             <#if valorSiguiente == 1>
-                <li><a class="active" href="/homeTags/${etiquetaFiltro}?pagina=${siguiente}">Siguiente &gt;&gt;</a></li>
+                <li><a class="active" href="/inicio?pagina=${siguiente}">Siguiente &gt;&gt;</a></li>
             </#if>
 
         </ul>
+        <p>Copyrights © 2015 Blog All rights reserved | Template by <a href="http://w3layouts.com/">W3layouts</a></p>
     </div>
-
-</footer>
-</html>
+</div>

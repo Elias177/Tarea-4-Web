@@ -1,11 +1,13 @@
 package ORM;
 
 import clases.Articulo;
+import clases.Etiqueta;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticuloORM {
@@ -25,10 +27,15 @@ public class ArticuloORM {
         return count;
     }
 
-    public void editarArticulo(Articulo a, String titulo, String cuerpo) {
+    public void editarArticulo(Articulo a, String titulo, String cuerpo, ArrayList<Etiqueta> etiquetas) {
+        EtiquetaORM orm =  new EtiquetaORM();
         em.getTransaction().begin();
         a.setTitulo(titulo);
         a.setCuerpo(cuerpo);
+        a.setListaEtiqueta(etiquetas);
+        for(int i = 0; i < etiquetas.size(); i++){
+            orm.guardarEtiqueta(etiquetas.get(i));
+        }
         em.merge(a);
         em.getTransaction().commit();
 

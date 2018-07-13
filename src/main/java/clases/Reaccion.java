@@ -6,7 +6,8 @@ import javax.persistence.*;
 public class Reaccion {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rea_generator")
+    @SequenceGenerator(name="rea_generator", sequenceName = "rea_seq", allocationSize=1)
     private Long id;
 
     @ManyToOne
