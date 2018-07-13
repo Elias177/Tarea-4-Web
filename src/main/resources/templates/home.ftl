@@ -54,16 +54,16 @@
 
               <#if usuario??>
                   <#if usuario.administrator>
-  						<li><a href="/crearUsuario">NUEVO USUARIO</a></li>
-                        <li><a href="/gestionUsuario">GESTIONAR USUARIOS</a></li>
+                      <li><a href="/crearUsuario">NUEVO USUARIO</a></li>
+                      <li><a href="/gestionUsuario">USUARIOS</a></li>
                   </#if>
               </#if>
 
- 						 <#if usuario??>
-  						<li><a href="/logout">LOG OUT</a></li>
-                         <#else>
- 						 <li><a href="/login">																										LOG IN</a></li>
-                         </#if>
+              <#if usuario??>
+                      <li><a href="/logout">LOG OUT</a></li>
+              <#else>
+                      <li><a href="/login">																									LOG IN</a></li>
+              </#if>
                 <div class="clearfix"> </div>
             </ul>
         </div>
