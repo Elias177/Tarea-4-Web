@@ -1,24 +1,29 @@
-
-
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 <link rel="stylesheet" href="css/login.css">
-<div class = "container">
-    <div class="wrapper">
-        <form class="form-signin" method="post" action="/login">
-            <h3 class="form-signin-heading">Welcome Back! Please Sign In</h3>
-            <hr class="colorgraph"><br>
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+        <!-- Tabs Titles -->
 
-            <input type="text" class="form-control rounded-0" name="username" placeholder="usuario" required="" autofocus="" />
-            <input type="password" class="form-control rounded-0" name="password" placeholder="contraseña" required=""/>
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
+        </div>
+
+        <!-- Login Form -->
+        <form class="form-signin" method="post" action="/login">
+            <input type="text" class="fadeIn second" name="username" placeholder="username" required="" autofocus="">
+            <input type="password" class="fadeIn third" name="password" placeholder="contraseña" required="">
+
+            <input name="Submit" type="Submit" class="fadeIn fourth" value="Login">
+            <br/>
             <input class="form-check-input" type="checkbox" name="keepLog">
             <label class="form-check-label" for="keepLog">
-                <strong>Mantener Logeado</strong>
+                <strong>Recuerdame</strong>
             </label>
-            <button class="btn btn-lg btn-primary btn-block"  name="Submit" value="Login" type="Submit">Login</button>
         </form>
+
     </div>
 </div>
