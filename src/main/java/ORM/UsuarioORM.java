@@ -12,7 +12,6 @@ public class UsuarioORM {
 
     public void guardarUsuario(Usuario usuario){
         em.getTransaction().begin();
-        usuario.setActivo(true);
         em.persist(usuario);
         em.getTransaction().commit();
 
@@ -23,19 +22,30 @@ public class UsuarioORM {
         return count;
     }
 
-    public void editarUsuario(Usuario editar){
+    public void editarUsuario(Usuario editar, String username, String password, boolean autor, boolean administrator){
         em.getTransaction().begin();
         Usuario u = em.find(Usuario.class,editar.getId());
-        u = editar;
+        u.setUsername(username);
+        u.setPassword(password);
+        u.setAutor(autor);
+        u.setAdministrator(administrator);
+        em.merge(u);
         em.getTransaction().commit();
         
     }
 
-    public void dropUsuario(Long id){
-        em.getTransaction().begin();
+    public String dropUsuario(Long id){
         Usuario u = em.find(Usuario.class,id);
-        em.remove(u);
-        em.getTransaction().commit();
+        if(u.getUsername().equalsIgnoreCase("admin") && u.isAdministrator()){
+            return "no";
+        }else{
+            em.getTransaction().begin();
+            em.remove(u);
+            em.getTransaction().commit();
+            return "Usuario Borrado";
+        }
+
+
         
     }
 

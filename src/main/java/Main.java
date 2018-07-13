@@ -41,16 +41,32 @@ public class Main {
                 response.redirect("/");
             }
         });
-        before("/usuario/gestionUsuario", (request, response) -> {
+
+
+        before("/gestionUsuario", (request, response) -> {
             Usuario usuario = request.session(true).attribute("usuario");
-            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+            if (usuario == null || (!usuario.isAdministrator())) {
+                response.redirect("/");
+            }
+        });
+
+        before("/usuarioEliminar/:id", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator())) {
+                response.redirect("/");
+            }
+        });
+
+        before("/editarUsuario/:id", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator())) {
                 response.redirect("/");
             }
         });
 
         before("/agregarUsuario", (request, response) -> {
             Usuario usuario = request.session(true).attribute("usuario");
-            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+            if (usuario == null || (!usuario.isAdministrator())) {
                 response.redirect("/");
             }
         });
@@ -185,10 +201,6 @@ public class Main {
             template.process(atr, writer);
 
             Map<String, String> cookies = req.cookies();
-            String salida="";
-            for(String key : cookies.keySet())
-                salida+=String.format("Cookie %s = %s", key, cookies.get(key));
-
 
             return writer;
         });
@@ -430,7 +442,7 @@ public class Main {
 
 
         post("/editar/:id", (req, res) -> {
-            long id = Integer.parseInt(req.params("id"));
+            long id = Long.parseLong(req.params("id"));
             String titulo = req.queryParams("titulo");
             String cuerpo = req.queryParams("cuerpo");
             String etiquetas = req.queryParams("etiquetas");
@@ -461,6 +473,9 @@ public class Main {
                 StringWriter writer = new StringWriter();
                 Map<String, Object> atributos = new HashMap<>();
                 Template temp = configuration.getTemplate("templates/gestionUsuarios.ftl");
+                if(req.queryParams("esAdmin")!=null)
+                atributos.put("esAdmin",Integer.parseInt(req.queryParams("esAdmin")));
+
 
                 atributos.put("usuarioList",usuarioORM.getUsuarioList());
                 atributos.put("usuario",usuario);
@@ -488,8 +503,57 @@ public class Main {
             return writer;
         });
         post("/usuarioEliminar/:id", (req, res) -> {
-            usuarioORM.borrarUsuario(Long.valueOf(req.params("id")));
+            String re = usuarioORM.dropUsuario(Long.valueOf(req.params("id")));
+            System.out.println(re);
+            if(re.equalsIgnoreCase("no")){
+                res.redirect("/gestionUsuario?esAdmin=1");
+            }else{
+                res.redirect("/gestionUsuario?esAdmin=0");
+            }
+
+            return null;
+        });
+
+        get("usuario/editar/:id", (req, res) -> {
+            StringWriter writer = new StringWriter();
+            Map<String, Object> atributos = new HashMap<>();
+            Template template = configuration.getTemplate("templates/editarUsuario.ftl");
+
+            Usuario usuario = usuarioORM.getUsuarioId(Long.parseLong(req.params("id")));
+
+            atributos.put("usuario", usuario);
+            template.process(atributos, writer);
+
+            return writer;
+        });
+
+        post("/editarUsuario/:id", (req, res) -> {
+            long id = Long.parseLong(req.params("id"));
+            String username = req.queryParams("username");
+            String password = req.queryParams("password");
+            String administrator = req.queryParams("administrator");
+            Usuario usuario = usuarioORM.getUsuarioId(id);
+            boolean admin = usuario.isAdministrator();
+            boolean a = usuario.isAutor();
+            if(administrator == null){
+                admin = false;
+            }else if(administrator.equals("on")){
+                admin = true;
+            }
+
+            String autor = req.queryParams("autor");
+
+            if(autor == null){
+                a=false;
+            }else if(autor.equals("on")){
+                a=true;
+            }
+
+
+            usuarioORM.editarUsuario(usuario,username,password,a,admin);
+
             res.redirect("/gestionUsuario");
+
             return null;
         });
 
