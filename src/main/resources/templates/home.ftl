@@ -91,7 +91,7 @@
                              <#if articulo.cuerpo?length &lt; 71>
                                  <h4><a href="articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                  <p>${articulo.cuerpo}</p>
-                                 <a href="/${articulo.id}"><span></span>READ MORE</a>
+                                 <a href="articulo/${articulo.id}"><span></span>READ MORE</a>
                                 <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
@@ -104,7 +104,7 @@
                              <#else>
                                 <h4><a href="articulo/${articulo.id}">${articulo.titulo}</a>   ${articulo.fecha}</h4>
                                 <p>${articulo.cuerpo?substring(0,70)}...</p>
-                                <a href="/${articulo.id}"><span></span>READ MORE</a>
+                                <a href="articulo/${articulo.id}"><span></span>READ MORE</a>
                                 <p>   </p>
                                  <#if articulo.listaEtiqueta?size gt 0>
                                      <#list articulo.listaEtiqueta as etiqueta>
@@ -141,8 +141,9 @@
 
 
 <!---->
-<div class="footer">
-    <div class="container">
+
+
+                          <div class="page-footer font-small blue fixed-bottom">
         <ul class="pagination">
             <#if valorAnterior == 1>
 					<li><a class="active" href="/inicio?pagina=${anterior}">&lt;&lt; Anterior</a></li>
@@ -154,6 +155,5 @@
             </#if>
 
         </ul>
-        <p>Copyrights © 2015 Blog All rights reserved | Template by <a href="http://w3layouts.com/">W3layouts</a></p>
     </div>
-</div>
+

@@ -44,14 +44,16 @@ public class ArticuloORM {
     public void borrarArticulo(Long id) {
         em.getTransaction().begin();
         Articulo u = em.find(Articulo.class, id);
-        em.remove(u);
+        u.setActivo(true);
+        em.merge(u);
         em.getTransaction().commit();
+
         
     }
 
     public List<Articulo> listarArticulos(int pagina){
 
-        Query query = em.createQuery("select a from Articulo a order by a.id desc")
+        Query query = em.createQuery("select a from Articulo a where a.activo = false order by a.id desc")
                 .setFirstResult(5*(pagina-1))
                 .setMaxResults(5);
 

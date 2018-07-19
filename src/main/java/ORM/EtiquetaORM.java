@@ -2,7 +2,10 @@ package ORM;
 
 import clases.Etiqueta;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 import java.util.List;
 
 public class EtiquetaORM {
@@ -11,17 +14,10 @@ public class EtiquetaORM {
     EntityManager em = emf.createEntityManager();
 
     public void guardarEtiqueta(Etiqueta etiqueta) {
-        List<Etiqueta> e = checkEtiqueta();
-        for(int i = 0; i < e.size(); i++){
-            if(!e.get(i).getEtiqueta().equalsIgnoreCase(etiqueta.getEtiqueta())){
-                em.getTransaction().begin();
-                em.persist(etiqueta);
-                em.getTransaction().commit();
-            }else{
-                editarEtiqueta(etiqueta,etiqueta.getEtiqueta());
-            }
-
-        }
+        System.out.println("MA");
+        em.getTransaction().begin();
+        em.persist(etiqueta);
+        em.getTransaction().commit();
 
     }
 
@@ -57,15 +53,6 @@ public class EtiquetaORM {
         return etiquetas;
     }
 
-    public Etiqueta getEtiquetaNombre(String etiqueta){
-        try{
-        Query query = em.createQuery("select e from Etiqueta e where e.etiqueta = ?1")
-                .setParameter(1, etiqueta);
-        return (Etiqueta) query.getSingleResult();
-    } catch (NoResultException e) {
-        return null;
-    }
-    }
 
     public List<Etiqueta> checkEtiqueta() {
         try {

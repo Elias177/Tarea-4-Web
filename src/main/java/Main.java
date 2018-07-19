@@ -7,7 +7,6 @@ import spark.Session;
 
 import java.io.StringWriter;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.*;
 
 import static spark.Spark.*;
@@ -16,7 +15,7 @@ public class Main {
 
 
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         staticFiles.location("/templates");
        // org.h2.tools.Server.createTcpServer().start();
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
@@ -50,7 +49,7 @@ public class Main {
             }
         });
 
-        before("/usuarioEliminar/:id", (request, response) -> {
+        before("/usuario/eliminar/:id", (request, response) -> {
             Usuario usuario = request.session(true).attribute("usuario");
             if (usuario == null || (!usuario.isAdministrator())) {
                 response.redirect("/");
@@ -79,6 +78,13 @@ public class Main {
         });
 
         before("/articulo/editar/:id", (request, response) -> {
+            Usuario usuario = request.session(true).attribute("usuario");
+            if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
+                response.redirect("/");
+            }
+        });
+
+        before("/usuario/editar/:id", (request, response) -> {
             Usuario usuario = request.session(true).attribute("usuario");
             if (usuario == null || (!usuario.isAdministrator() && !usuario.isAutor())) {
                 response.redirect("/");
@@ -295,18 +301,13 @@ public class Main {
 
             ArrayList<Etiqueta> et =  new ArrayList<>();
             for(int i = 0; i < listaEtiquetas.size(); i++){
-
-                if(etiquetaORM.getEtiquetaNombre(listaEtiquetas.get(i)) != null){
-                    et.add(etiquetaORM.getEtiquetaNombre(listaEtiquetas.get(i)));
-                }else{
-                    Etiqueta e = new Etiqueta(listaEtiquetas.get(i));
-                    etiquetaORM.guardarEtiqueta(e);
-                    et.add(e);
-                }
+                Etiqueta e = new Etiqueta(listaEtiquetas.get(i));
+                et.add(e);
+                etiquetaORM.guardarEtiqueta(e);
             }
 
             Date d = new Date(System.currentTimeMillis());
-            System.out.println(et);
+
             Articulo a =  new Articulo(titulo,cuerpo,usuario,d,null,et);
             a.setLikes(0);
             a.setDislikes(0);
@@ -314,6 +315,8 @@ public class Main {
 
 
             res.redirect("/");
+
+
 
             return null;
         });
@@ -348,7 +351,7 @@ public class Main {
 
 
 
-        post("/:id/comentar", (req, res) -> {
+        post("articulo/:id/comentar", (req, res) -> {
             Usuario usuario = req.session(true).attribute("usuario");
             Long idArticulo = Long.parseLong(req.params("id"));
             String comentario = req.queryParams("comentario");
@@ -358,7 +361,7 @@ public class Main {
             return null;
         });
 
-        get("/:id/like", (req, res) -> {
+        get("articulo/:id/like", (req, res) -> {
             Usuario usuario = req.session(true).attribute("usuario");
             Long idArticulo = Long.parseLong(req.params("id"));
             Articulo articulo = articuloORM.getArticulo(idArticulo);
@@ -381,7 +384,7 @@ public class Main {
             return null;
         });
 
-        get("/:id/dislike", (req, res) -> {
+        get("articulo/:id/dislike", (req, res) -> {
             Usuario usuario = req.session(true).attribute("usuario");
             Long idArticulo = Long.parseLong(req.params("id"));
             Articulo articulo = articuloORM.getArticulo(idArticulo);
@@ -401,7 +404,7 @@ public class Main {
             return null;
         });
 
-        get("/eliminar/:id", (req, res) -> {
+        get("articulo/eliminar/:id", (req, res) -> {
             StringWriter writer = new StringWriter();
             Map<String, Object> atributos = new HashMap<>();
             Template template = configuration.getTemplate("templates/eliminarArticulo.ftl");
@@ -414,7 +417,7 @@ public class Main {
         });
 
 
-        get("/editar/:id", (req, res) -> {
+        get("articulo/editar/:id", (req, res) -> {
             StringWriter writer = new StringWriter();
             Map<String, Object> atributos = new HashMap<>();
             Template template = configuration.getTemplate("templates/editarArticulo.ftl");

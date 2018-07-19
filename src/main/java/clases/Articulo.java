@@ -35,7 +35,7 @@ public class Articulo {
     @OneToMany(mappedBy = "articulo",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Comentario> listaComentarios;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ARTICULO_ETIQUETA", joinColumns = { @JoinColumn(name = "ARTICULO_ID") }, inverseJoinColumns = { @JoinColumn(name = "LISTAETIQUETA_ID_ETIQUETA") })
     private List<Etiqueta> listaEtiqueta;
 
